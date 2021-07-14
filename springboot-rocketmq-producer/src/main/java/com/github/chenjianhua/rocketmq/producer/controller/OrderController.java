@@ -1,12 +1,10 @@
 package com.github.chenjianhua.rocketmq.producer.controller;
 
-import com.github.chenjianhua.rocketmq.producer.param.CreateBookOrderParam;
 import com.github.chenjianhua.rocketmq.producer.service.BookOrderService;
 import com.github.common.resp.ResponseVO;
 import com.github.common.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -19,8 +17,14 @@ public class OrderController {
     private BookOrderService bookOrderService;
 
     @PostMapping("/createBookOrder")
-    public ResponseVO createBookOrder(@RequestBody CreateBookOrderParam param) {
-        bookOrderService.createBookOrder(param);
+    public ResponseVO createBookOrder() {
+        bookOrderService.createBookOrder();
+        return ResponseUtil.ok();
+    }
+
+    @PostMapping("/createBookOrderTransaction")
+    public ResponseVO createBookOrderTransaction() {
+        bookOrderService.createBookOrderTransaction();
         return ResponseUtil.ok();
     }
 }

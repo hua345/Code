@@ -6,3 +6,10 @@ Content-Type: application/json
   "tradeNum":1
 }
 ###
+POST http://localhost:8090/createBookOrderTransaction
+Content-Type: application/json
+
+{
+  "bookName":"rocketmq可靠发送",
+  "tradeNum":1
+}

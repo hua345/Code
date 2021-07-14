@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.chenjianhua.rocketmq.producer.mapper.BookOrderTransactionMapper">
+
+    <resultMap id="BaseResultMap" type="com.github.chenjianhua.rocketmq.producer.model.BookOrderTransaction">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="orderNumber" column="order_number" jdbcType="VARCHAR"/>
+        <result property="transactionId" column="transaction_id" jdbcType="VARCHAR"/>
+        <result property="creator" column="creator" jdbcType="VARCHAR"/>
+        <result property="updator" column="updator" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_number,transaction_id,
+        creator,updator,create_time,
+        update_time
+    </sql>
+</mapper>

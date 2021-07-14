@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -81,6 +82,8 @@ public class BookOrderService extends AbstractService<BookOrderMapper, BookOrder
         } catch (InterruptedException e) {
             throw new BussinessException("线程睡眠失败");
         }
+        List<BookOrder> bookOrders = lambdaQuery().list();
+
         log.info("保存book订单:{}", JsonUtil.toJsonString(bookOrder));
     }
 

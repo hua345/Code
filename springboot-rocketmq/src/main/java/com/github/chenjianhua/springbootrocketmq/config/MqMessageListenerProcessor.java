@@ -1,5 +1,6 @@
 package com.github.chenjianhua.springbootrocketmq.config;
 
+import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -22,10 +23,7 @@ public class MqMessageListenerProcessor implements MessageListenerConcurrently {
         if (CollectionUtils.isEmpty(list)) {
             log.info("收到的消息为空");
         } else {
-            /**
-             *   业务逻辑
-             */
-            log.info("收到了消息=====" + new String(list.get(0).getBody()));
+            log.info("收到了消息{}", JsonUtil.toJsonString(list));
         }
         return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
     }

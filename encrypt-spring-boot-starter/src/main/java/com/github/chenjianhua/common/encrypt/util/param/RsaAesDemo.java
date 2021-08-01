@@ -10,12 +10,12 @@ import java.util.List;
  * @date 2021/7/2
  */
 @Data
-public class RsaDemo extends AbstractRsaSign {
+public class RsaAesDemo extends AbstractRsaAesSign {
 
     private String outOrderNumber = "order123";
     private List<DemoItem> demoItems;
 
-    public RsaDemo() {
+    public RsaAesDemo() {
         List<DemoItem> demoItems = new LinkedList<>();
         DemoItem demoItem = new DemoItem();
         demoItem.setProductCode("productCode123");

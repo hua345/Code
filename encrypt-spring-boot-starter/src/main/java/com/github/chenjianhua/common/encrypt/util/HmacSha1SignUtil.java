@@ -9,6 +9,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.TreeMap;
 
 /**
@@ -30,15 +31,32 @@ public class HmacSha1SignUtil {
     public static String getSpliceSignStr(TreeMap<String, Object> treeMap) {
         // 拼接参数
         StringBuilder sb = new StringBuilder();
-        treeMap.forEach((k, v) -> {
-            if (v != null) {
-                sb.append(k).append("=").append(v).append("&");
-            }
-        });
+        getSpliceSignStr(sb, treeMap);
         if (sb.length() > 0) {
             sb.deleteCharAt(sb.length() - 1);
         }
         return sb.toString();
+    }
+
+    public static void getSpliceSignStr(StringBuilder sb, TreeMap<String, Object> treeMap) {
+        treeMap.forEach((k, v) -> {
+            if (null == v) {
+                return;
+            }
+            if (!(v instanceof List)) {
+                sb.append(k).append("=").append(v).append("&");
+            } else {
+                List<Object> objectList = (List) v;
+                objectList.forEach(item -> {
+                    if (item instanceof String) {
+                        sb.append(k).append("=").append(item).append("&");
+                    } else {
+                        TreeMap<String, Object> treeItemMap = JsonUtil.toBean(JsonUtil.toJsonString(item), TreeMap.class);
+                        getSpliceSignStr(sb, treeItemMap);
+                    }
+                });
+            }
+        });
     }
 
     /**

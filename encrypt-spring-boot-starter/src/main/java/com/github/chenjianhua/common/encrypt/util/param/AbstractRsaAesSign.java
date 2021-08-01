@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2021/7/2
  */
 @Data
-public class AbstractRsaSign {
+public class AbstractRsaAesSign {
     protected String encodedKey;
     protected String sign;
 }

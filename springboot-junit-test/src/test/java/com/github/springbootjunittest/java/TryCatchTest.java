@@ -19,9 +19,9 @@ public class TryCatchTest {
             Map<String, String> map = new HashMap<>();
             map.get("aa").toString();
         } catch (NullPointerException e) {
-            log.error("NullPointerException :", e);
+            log.error("NullPointerException:", e);
         } catch (Exception e) {
-            log.info("exception :{}", e);
+            log.info("exception:", e);
         } finally {
             log.info("finally执行");
         }

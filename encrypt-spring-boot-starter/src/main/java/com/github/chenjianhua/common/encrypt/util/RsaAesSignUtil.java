@@ -1,7 +1,7 @@
 package com.github.chenjianhua.common.encrypt.util;
 
 
-import com.github.chenjianhua.common.encrypt.util.param.AbstractRsaSign;
+import com.github.chenjianhua.common.encrypt.util.param.AbstractRsaAesSign;
 import com.github.chenjianhua.common.encrypt.util.param.AbstractSign;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.TreeMap;
  * @date 2019/12/3
  */
 @Slf4j
-public class RsaSignUtil {
+public class RsaAesSignUtil {
 
     private static final String CHARSET = StandardCharsets.UTF_8.name();
 
@@ -61,12 +61,12 @@ public class RsaSignUtil {
      * 生成签名
      */
     public static void generateSign(Object obj, String publicKey) {
-        if (!(obj instanceof AbstractRsaSign)) {
+        if (!(obj instanceof AbstractRsaAesSign)) {
             log.error("校验对象不符合要求");
             throw new RuntimeException("校验对象不符合要求");
         }
         String aesKey = UuidUtil.getUUID32();
-        AbstractRsaSign signObj = (AbstractRsaSign) obj;
+        AbstractRsaAesSign signObj = (AbstractRsaAesSign) obj;
 signObj.set
         TreeMap<String, Object> treeMap = JsonUtil.toBean(JsonUtil.toJsonString(obj), TreeMap.class);
         // 获取客户端签名信息，同时从参数列表删除

@@ -1,4 +1,4 @@
-package com.github.chenjianhua.springboot.jdbc.web;
+package com.github.chenjianhua.springboot.jdbc.controller;
 
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.chenjianhua.springboot.jdbc.param.TestEnumParam;

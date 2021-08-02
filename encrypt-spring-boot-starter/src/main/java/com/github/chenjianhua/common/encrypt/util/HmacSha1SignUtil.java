@@ -23,7 +23,6 @@ public class HmacSha1SignUtil {
 
     private static final String CHARSET = StandardCharsets.UTF_8.name();
 
-    public static String secretKey = "435443C3-ECDB-4D5B-74AD-31BD1334F1AA";
 
     /**
      * 拼接签名字符串
@@ -62,7 +61,7 @@ public class HmacSha1SignUtil {
     /**
      * 获取HmacSha1签名
      */
-    public static String getHmacSha1Sign(TreeMap<String, Object> treeMap) {
+    public static String getHmacSha1Sign(TreeMap<String, Object> treeMap, String secretKey) {
         try {
             // 使用HMAC-SHA1算法计算签名，按照base64编码
             Mac mac = Mac.getInstance("HmacSHA1");
@@ -79,14 +78,14 @@ public class HmacSha1SignUtil {
     /**
      * 生成签名
      */
-    public static void generateSign(Object obj) {
+    public static void generateSign(Object obj, String secretKey) {
         if (!(obj instanceof AbstractSign)) {
             return;
         }
         TreeMap<String, Object> treeMap = JsonUtil.toBean(JsonUtil.toJsonString(obj), TreeMap.class);
         // 获取客户端签名信息，同时从参数列表删除
         String sign = (String) treeMap.remove("sign");
-        String checkSign = getHmacSha1Sign(treeMap);
+        String checkSign = getHmacSha1Sign(treeMap, secretKey);
         AbstractSign signObj = (AbstractSign) obj;
         signObj.setSign(checkSign);
     }
@@ -94,7 +93,7 @@ public class HmacSha1SignUtil {
     /**
      * 校验签名
      */
-    public static boolean checkSign(Object obj) {
+    public static boolean checkSign(Object obj, String secretKey) {
         if (!(obj instanceof AbstractSign)) {
             log.error("校验对象不符合要求");
             return false;
@@ -103,7 +102,7 @@ public class HmacSha1SignUtil {
         TreeMap<String, Object> treeMap = JsonUtil.toBean(JsonUtil.toJsonString(obj), TreeMap.class);
         // 获取客户端签名信息，同时从参数列表删除
         String sign = (String) treeMap.remove("sign");
-        String checkSign = getHmacSha1Sign(treeMap);
+        String checkSign = getHmacSha1Sign(treeMap, secretKey);
         if (checkSign.equals(sign)) {
             return true;
         }

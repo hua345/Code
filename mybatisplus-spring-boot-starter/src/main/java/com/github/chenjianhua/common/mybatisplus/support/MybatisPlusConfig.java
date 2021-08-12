@@ -28,18 +28,15 @@ public class MybatisPlusConfig implements MetaObjectHandler {
     public MybatisPlusInterceptor mybatisPlusInterceptor(MybatisPlusAutoProperties ktMybatisPlusAutoProperties) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         log.info(ktMybatisPlusAutoProperties.toString());
-        // 分页插件
+        /**
+         * 新的分页插件,一缓和二缓遵循mybatis的规则,需要设置 MybatisConfiguration#useDeprecatedExecutor = false 避免缓存出现问题(该属性会在旧插件移除后一同移除)
+         */
         PaginationInnerInterceptor innerInterceptor = new PaginationInnerInterceptor(ktMybatisPlusAutoProperties.getDbType());
         innerInterceptor.setOverflow(ktMybatisPlusAutoProperties.getPageConfig().isOverflow());
         innerInterceptor.setMaxLimit(ktMybatisPlusAutoProperties.getPageConfig().getLimit());
         interceptor.addInnerInterceptor(innerInterceptor);
 
         return interceptor;
-    }
-
-    @Bean
-    public ConfigurationCustomizer configurationCustomizer() {
-        return configuration -> configuration.setUseDeprecatedExecutor(false);
     }
 
     @Override
@@ -53,6 +50,10 @@ public class MybatisPlusConfig implements MetaObjectHandler {
         this.strictUpdateFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
     }
 
+    @Bean
+    public ConfigurationCustomizer configurationCustomizer() {
+        return configuration -> configuration.setUseDeprecatedExecutor(false);
+    }
     /**
      * 重写方法，不管有没有值都覆盖
      */

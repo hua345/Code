@@ -10,6 +10,7 @@ import com.github.chenjianhua.springboot.jdbc.mybatisplus.model.Book;
 import com.github.chenjianhua.springboot.jdbc.mybatisplus.service.BookMybatisPlusService;
 import com.github.chenjianhua.springboot.jdbc.param.BookMybatisPlusParam;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,12 @@ public class MybatisPlusTest {
         Book book = new Book();
         book.setId(idLeafRedisService.getIdByBizTag("Book"));
         book.setBookName("刻意练习");
-        log.info("mybatisPlus保存book:{}", JsonUtil.toJsonString(book));
+        Assertions.assertTrue(bookMybatisPlusService.save(book));
         bookMybatisPlusService.save(book);
         Book bookResult = bookMybatisPlusService.getById(book.getId());
-        log.info("mybatisPlus查询结果book:{}", JsonUtil.toJsonString(bookResult));
+        Assertions.assertNotNull(bookResult);
+        Assertions.assertEquals(book.getId(), bookResult.getId());
+        Assertions.assertEquals(book.getBookName(), bookResult.getBookName());
     }
 
     @Test

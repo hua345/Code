@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({MapperAutoConfigureRegistrar.class})
+//@Import({MyImportBeanDefinitionRegistrar.class})
 public @interface EnableMyScanAnnotation {
     String scanPath() default "";
 }

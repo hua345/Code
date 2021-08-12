@@ -1,11 +1,13 @@
 package com.github.chenjianhua.springboot.jdbc;
 
+import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.github.chenjianhua.common.id.leaf.IdLeafRedisService;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.chenjianhua.springboot.jdbc.mybatis.model.Book;
 import com.github.chenjianhua.springboot.jdbc.mybatis.service.BookMybatisService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +34,18 @@ public class MybatisTest {
 
     @Test
     public void MybatisTest() {
+        MybatisSqlSessionFactoryBean mybatisSqlSessionFactoryBean = new MybatisSqlSessionFactoryBean();
+
         Book book = new Book();
         book.setId(idLeafRedisService.getIdByBizTag("Book"));
         book.setBookName("刻意练习");
         book.setCreateTime(LocalDateTime.now());
         book.setUpdateTime(LocalDateTime.now());
-        log.info("mybatis保存book:{}", JsonUtil.toJsonString(book));
-        bookMybatisService.mybatisSave(book);
+        Assertions.assertEquals(1, bookMybatisService.mybatisSave(book));
         Book bookResult = bookMybatisService.mybatisFindById(book.getId());
-        log.info("mybatis查询结果book:{}", JsonUtil.toJsonString(bookResult));
+        Assertions.assertNotNull(bookResult);
+        Assertions.assertEquals(book.getId(), bookResult.getId());
+        Assertions.assertEquals(book.getBookName(), bookResult.getBookName());
     }
 
     @Test

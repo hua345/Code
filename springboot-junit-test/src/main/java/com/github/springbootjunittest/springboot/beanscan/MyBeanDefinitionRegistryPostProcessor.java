@@ -1,11 +1,12 @@
 package com.github.springbootjunittest.springboot.beanscan;
 
+import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.TypedStringValue;
@@ -16,14 +17,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
+
+import java.util.Map;
 
 /**
  * @author chenjianhua
  * @date 2021/5/30
  */
+@Slf4j
 @Setter
-public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
+public class MyBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware, BeanNameAware {
     private String basePackage;
     private String beanName;
     private ApplicationContext applicationContext;
@@ -54,7 +57,8 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
-
+        Map<String, Object> beanMap = configurableListableBeanFactory.getBeansWithAnnotation(MyScanAnnotation.class);
+        log.info("beanMap :{}", JsonUtil.toJsonString(beanMap));
     }
 
     private Environment getEnvironment() {
@@ -75,10 +79,5 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
                 return value instanceof TypedStringValue ? ((TypedStringValue) value).getValue() : null;
             }
         }
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Assert.notNull(this.basePackage, "Property 'basePackage' is required");
     }
 }

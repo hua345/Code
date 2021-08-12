@@ -18,7 +18,7 @@ import java.util.List;
  * @author chenjianhua
  * @date 2021/5/7
  */
-public class MapperAutoConfigureRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+public class MyImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
 
     private ResourceLoader resourceLoader;
 
@@ -36,8 +36,7 @@ public class MapperAutoConfigureRegistrar implements ImportBeanDefinitionRegistr
         scanner.registerTypeFilter();
         scanner.doScan(basePackage);
 
-
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(MapperScannerConfigurer.class);
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(MyBeanDefinitionRegistryPostProcessor.class);
         List<String> basePackages = new ArrayList();
         basePackages.add(getDefaultBasePackage(importingClassMetadata));
 
@@ -46,7 +45,7 @@ public class MapperAutoConfigureRegistrar implements ImportBeanDefinitionRegistr
     }
 
     private static String generateBaseBeanName(AnnotationMetadata importingClassMetadata, int index) {
-        return importingClassMetadata.getClassName() + "#" + MapperAutoConfigureRegistrar.class.getSimpleName() + "#" + index;
+        return importingClassMetadata.getClassName() + "#" + MyImportBeanDefinitionRegistrar.class.getSimpleName() + "#" + index;
     }
 
     private static String getDefaultBasePackage(AnnotationMetadata importingClassMetadata) {

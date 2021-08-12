@@ -20,8 +20,8 @@ public class BookMybatisService {
     @Autowired
     private BookMapper bookMapper;
 
-    public void mybatisSave(Book book) {
-        bookMapper.insert(book);
+    public int mybatisSave(Book book) {
+        return bookMapper.insert(book);
     }
 
     public Book mybatisFindById(Long id) {

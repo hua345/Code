@@ -1,10 +1,12 @@
 package com.github.chenjianhua.producer.controller;
 
 import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.chenjianhua.producer.service.HelloService;
 import com.github.chenjianhua.producer.vo.HelloParam;
 import com.github.common.resp.ResponseVO;
 import com.github.common.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 public class HelloController {
+
+    @Autowired
+    private HelloService helloService;
 
     @GetMapping("/hello")
     public ResponseVO<String> index(@RequestParam String name) {
@@ -26,8 +31,18 @@ public class HelloController {
     @PostMapping("/postHello")
     public ResponseVO<String> postHello(@RequestBody HelloParam param) {
         log.info("postHello param:{}", JsonUtil.toJsonString(param));
-        StringBuilder sb = new StringBuilder();
-        sb.append("hello ").append(param.getName()).append(" from post");
-        return ResponseUtil.ok(sb.toString());
+        return ResponseUtil.ok(helloService.postHello(param));
+    }
+
+    @PostMapping("/testBussinessException")
+    public ResponseVO<String> testBussinessException() {
+        helloService.testBussinessException();
+        return ResponseUtil.ok();
+    }
+
+    @PostMapping("/testException")
+    public ResponseVO<String> testException() throws Exception {
+        helloService.testException();
+        return ResponseUtil.ok();
     }
 }

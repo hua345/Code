@@ -34,8 +34,8 @@ public class HelloController {
         return ResponseUtil.ok(helloService.postHello(param));
     }
 
-    @PostMapping("/testBussinessException")
-    public ResponseVO<String> testBussinessException() {
+    @PostMapping("/testBusinessException")
+    public ResponseVO<String> testBusinessException() {
         helloService.testBussinessException();
         return ResponseUtil.ok();
     }

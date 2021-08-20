@@ -21,22 +21,20 @@ public class PageVo<T> implements Serializable {
     /**
      * 总记录数
      */
-    @JsonIgnore
     private long total;
     /**
      * 当前页
      */
-    @JsonIgnore
     private long page = 1;
+
+    private long totalPage = 1;
     /**
      * 每页记录数，默认为10，最大每页500条
      */
-    @JsonIgnore
     private int size = 10;
     /**
      * 排序
      */
-    @JsonIgnore
     private List<SortOrder> orders = new ArrayList<>();
     /**
      * 总记录
@@ -56,20 +54,9 @@ public class PageVo<T> implements Serializable {
         this.page = page;
     }
 
-    /**
-     * 组装分页返回
-     */
-    @JsonView
-    public Map<String, Object> getPage() {
+    public long getTotalPage() {
         long n = total % size;
-
-        Map<String, Object> page = new HashMap<>();
-        page.put("total", this.total);
-        page.put("page", this.page);
-        page.put("size", this.size);
-        page.put("totalPage", n > 0 ? total / size + 1 : total / size);
-        page.put("sorts", orders);
-        return page;
+        return n > 0 ? total / size + 1 : total / size;
     }
 
     public static <T> PageVo<T> of(IPage<T> queryPage) {

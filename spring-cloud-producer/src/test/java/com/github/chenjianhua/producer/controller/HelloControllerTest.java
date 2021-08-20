@@ -13,10 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -27,24 +31,46 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = ProducerApplication.class)
+@ActiveProfiles("dev")
 @AutoConfigureMockMvc
 class HelloControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
+    private final Charset defaultCharset = StandardCharsets.UTF_8;
+
     @Test
-    void testBussinessException() throws Exception {
+    void testPostHello() throws Exception {
+        HelloParam helloParam = new HelloParam();
+        helloParam.setName("fang");
         MvcResult mvcResult = mockMvc.perform(
-                        post("/testBussinessException")
+                        post("/postHello")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(JsonUtil.toJsonString(helloParam))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        ResponseVO responseVO = JsonUtil.toBean(mvcResult.getResponse().getContentAsString(defaultCharset), ResponseVO.class);
+        Assertions.assertNotNull(responseVO);
+        Assertions.assertEquals(ResponseStatusEnum.SUCCESS.getErrorCode(), responseVO.getCode());
+        log.info("responseVO:{}", JsonUtil.toJsonString(responseVO));
+    }
+
+    @Test
+    void testBusinessException() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/testBusinessException")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        ResponseVO responseVO = JsonUtil.toBean(mvcResult.getResponse().getContentAsString(), ResponseVO.class);
+        ResponseVO responseVO = JsonUtil.toBean(mvcResult.getResponse().getContentAsString(defaultCharset), ResponseVO.class);
         Assertions.assertNotNull(responseVO);
         Assertions.assertEquals(ResponseStatusEnum.SUCCESS.getErrorCode(), responseVO.getCode());
+        log.info("responseVO:{}", JsonUtil.toJsonString(responseVO));
     }
 
     @Test
@@ -56,8 +82,9 @@ class HelloControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        ResponseVO responseVO = JsonUtil.toBean(mvcResult.getResponse().getContentAsString(), ResponseVO.class);
+        ResponseVO responseVO = JsonUtil.toBean(mvcResult.getResponse().getContentAsString(defaultCharset), ResponseVO.class);
         Assertions.assertNotNull(responseVO);
         Assertions.assertEquals(ResponseStatusEnum.SERVER_ERROR.getErrorCode(), responseVO.getCode());
+        log.info("responseVO:{}", JsonUtil.toJsonString(responseVO));
     }
 }

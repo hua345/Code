@@ -1,0 +1,9 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    com.github.chenjianhua.common.excel.servlet.ServletConfig,\
+  com.github.chenjianhua.common.excel.servlet.ImportServlet,\
+  com.github.chenjianhua.common.excel.servlet.ExportServlet,\
+  com.github.chenjianhua.common.excel.servlet.ServletAopAdapterService,\
+    com.github.chenjianhua.common.excel.support.AnnotationExcelStrategyProcessor,\
+  com.github.chenjianhua.common.excel.util.ApplicationContextUtil,\
+  com.github.chenjianhua.common.excel.config.ExcelAutoConfiguration,\
+  com.github.chenjianhua.common.excel.converter.EasyExcelConverterConfiguration

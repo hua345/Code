@@ -1,0 +1,7 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.github.chenjianhua.common.feign.core.FeignInterceptor,\
+  com.github.chenjianhua.common.feign.config.HelloFeignAutoConfiguration
+ org.springframework.context.ApplicationListener\
+  com.github.chenjianhua.common.feign.config.FeignInitListener
+
+  

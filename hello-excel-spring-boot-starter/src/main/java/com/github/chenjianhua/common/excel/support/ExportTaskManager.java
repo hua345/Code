@@ -1,0 +1,114 @@
+package com.github.chenjianhua.common.excel.support;
+
+import com.github.chenjianhua.common.excel.bo.ept.ExportTaskMeta;
+import com.github.chenjianhua.common.excel.service.ExcelServerRequestService;
+import com.github.chenjianhua.common.excel.util.ThreadPoolUtil;
+import com.github.chenjianhua.common.excel.util.UuidUtil;
+import com.github.chenjianhua.common.excel.vo.ExportCallback;
+import com.szkunton.common.ktcommon.exception.BusinessException;
+import com.szkunton.common.ktcommon.vo.ResponseStatus;
+import com.github.chenjianhua.common.excel.support.ept.ExcelExportStrategy;
+import com.github.chenjianhua.common.excel.util.ApplicationContextUtil;
+import com.szkunton.common.ktjson.util.JsonUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.concurrent.*;
+
+/**
+ * @author chenjianhua
+ * @date 2021/3/22
+ */
+@Slf4j
+@Component
+public class ExportTaskManager implements ApplicationRunner {
+    private static final CompletionService<ResponseStatus<ExportCallback>> exportExcelCompletionService = new ExecutorCompletionService<>(ThreadPoolUtil.getInstance());
+
+    /**
+     * 同时支持10个导出
+     */
+    private static Semaphore semaphore = new Semaphore(10);
+
+    private static ExportCallback checkExcelExportParam(ExportTaskMeta taskMeta) {
+        if (StringUtils.isEmpty(taskMeta.getExportCode())) {
+            throw new BusinessException("导出类型为空!");
+        }
+        ExcelExportStrategy strategy = ExcelStrategySelector.getExportStrategy(taskMeta.getExportCode());
+        if (null == strategy) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("导出任务类型:").append(taskMeta.getExportCode()).append("没有执行策略");
+            log.error(sb.toString());
+            throw new BusinessException(sb.toString());
+        }
+        ExcelServerRequestService excelServerRequestService = ApplicationContextUtil.getBean(ExcelServerRequestService.class);
+        // 创建导出任务
+        ResponseStatus responseStatus = excelServerRequestService.addExportHis(taskMeta);
+        if (!responseStatus.isSuccess()) {
+            log.info("创建导出记录失败 :{}", JsonUtils.toJSONString(responseStatus));
+            throw new BusinessException("创建导出记录失败");
+        }
+        return null;
+    }
+
+
+    public static ResponseStatus<ExportCallback> excelExport(ExportTaskMeta taskMeta) {
+        taskMeta.setTaskNumber(UuidUtil.getUuid32());
+        ExcelServerRequestService excelServerRequestService = ApplicationContextUtil.getBean(ExcelServerRequestService.class);
+        try {
+            checkExcelExportParam(taskMeta);
+        } catch (BusinessException e) {
+            log.info(e.getMessage());
+            return ResponseStatus.error(e.getMessage());
+        }
+        ExportCallback exportCallback = new ExportCallback();
+        try {
+            exportCallback.setTaskNumber(taskMeta.getTaskNumber());
+            semaphore.acquire();
+            // 如果是异步导出任务或者当前正在执行的导出任务达到最大值
+            if (!taskMeta.isSyncTask()) {
+                // 异步执行，不返回文件路径
+                exportExcelCompletionService.submit(() -> ExcelProcessor.exportExcel(taskMeta));
+                return ResponseStatus.ok(exportCallback);
+            } else {
+                return ExcelProcessor.exportExcel(taskMeta);
+            }
+        } catch (Exception e) {
+            log.error("[{}]导出失败", taskMeta.getTaskNumber(), e);
+            excelServerRequestService.updateExportErrorResult(taskMeta, "上传文件异常");
+            return ResponseStatus.error(500, "导出失败!", exportCallback);
+        } finally {
+            // 只释放同步任务信号量，异步任务在异步完成时释放
+            if (taskMeta.isSyncTask()) {
+                semaphore.release();
+            }
+        }
+    }
+
+    private void handleAsyncTask() {
+        while (true) {
+            try {
+                Future<ResponseStatus<ExportCallback>> future = exportExcelCompletionService.take();
+                try {
+                    ResponseStatus<ExportCallback> callback = future.get();
+                } catch (ExecutionException e) {
+                    log.error("获取导出结果异常", e);
+                }
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                log.error("发生异常", e);
+            } finally {
+                semaphore.release();
+            }
+        }
+    }
+
+    @Async
+    @Override
+    public void run(ApplicationArguments args) {
+        handleAsyncTask();
+    }
+}

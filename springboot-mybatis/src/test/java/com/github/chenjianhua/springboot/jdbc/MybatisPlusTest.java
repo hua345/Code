@@ -42,7 +42,6 @@ public class MybatisPlusTest {
         book.setId(idLeafRedisService.getIdByBizTag("Book"));
         book.setBookName("刻意练习");
         Assertions.assertTrue(bookMybatisPlusService.save(book));
-        bookMybatisPlusService.save(book);
         Book bookResult = bookMybatisPlusService.getById(book.getId());
         Assertions.assertNotNull(bookResult);
         Assertions.assertEquals(book.getId(), bookResult.getId());

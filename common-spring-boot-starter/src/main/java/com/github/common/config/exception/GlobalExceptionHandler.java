@@ -64,13 +64,13 @@ public class GlobalExceptionHandler {
 	/**
 	 * 所有业务异常统一处理入口 （默认 HttpStatus.OK = 200）
 	 *
-	 * @param bussinessException 业务异常
+	 * @param businessException 业务异常
 	 * @return 全局统一返回体
 	 */
-	@ExceptionHandler(BussinessException.class)
-	public ResponseVO myRuntimeExceptionHandler(BussinessException bussinessException) {
-		log.error("Catch {} MyRuntimeException ; {}", bussinessException.getStackTrace()[0].toString(), bussinessException.getResponseResult());
-		return bussinessException.getResponseResult();
+	@ExceptionHandler(BusinessException.class)
+	public ResponseVO myRuntimeExceptionHandler(BusinessException businessException) {
+		log.error("Catch {} MyRuntimeException ; {}", businessException.getStackTrace()[0].toString(), businessException.getResponseResult());
+		return businessException.getResponseResult();
 	}
 
 	/**

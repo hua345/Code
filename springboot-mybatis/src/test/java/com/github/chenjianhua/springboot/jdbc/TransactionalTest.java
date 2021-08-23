@@ -1,8 +1,10 @@
 package com.github.chenjianhua.springboot.jdbc;
 
+import com.github.chenjianhua.springboot.jdbc.config.TransactionalFailEnum;
 import com.github.chenjianhua.springboot.jdbc.mybatisplus.service.BookMybatisPlusService;
 import com.github.chenjianhua.springboot.jdbc.mybatisplus.service.TransactionalTestService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +29,28 @@ public class TransactionalTest {
 
     @Test
     public void testSameClassMethod() {
-        bookMybatisPlusService.testSameClassMethod();
+        Exception exception = Assertions.assertThrows(
+                RuntimeException.class,
+                () -> bookMybatisPlusService.testSameClassMethod());
+        Assertions.assertEquals(TransactionalFailEnum.sameClassMethod.getDescription(), exception.getMessage());
     }
 
     @Test
-    public void testRollbackForError() throws Exception {
-        bookMybatisPlusService.rollbackForError();
+    public void testRollbackForError() {
+        Exception exception = Assertions.assertThrows(
+                Exception.class,
+                () -> bookMybatisPlusService.rollbackForError());
+        Assertions.assertEquals(TransactionalFailEnum.rollbackForError.getDescription(), exception.getMessage());
+
     }
 
     @Test
-    public void testPropagationError() throws Exception {
-        bookMybatisPlusService.propagationError();
+    public void testPropagationError() {
+        Exception exception = Assertions.assertThrows(
+                RuntimeException.class,
+                () -> bookMybatisPlusService.propagationError());
+        Assertions.assertEquals(TransactionalFailEnum.propagationError.getDescription(), exception.getMessage());
+
     }
 
     @Test
@@ -47,6 +60,10 @@ public class TransactionalTest {
 
     @Test
     public void testTransactionalTestService() {
-        transactionalTestService.protectClassMethod();
+        Exception exception = Assertions.assertThrows(
+                RuntimeException.class,
+                () -> transactionalTestService.protectClassMethod());
+        Assertions.assertEquals(TransactionalFailEnum.protectClassMethod.getDescription(), exception.getMessage());
+
     }
 }

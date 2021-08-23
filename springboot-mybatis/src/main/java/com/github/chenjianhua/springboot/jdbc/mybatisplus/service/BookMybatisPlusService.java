@@ -3,6 +3,7 @@ package com.github.chenjianhua.springboot.jdbc.mybatisplus.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.chenjianhua.common.mybatisplus.support.AbstractService;
 import com.github.chenjianhua.common.mybatisplus.vo.PageVo;
+import com.github.chenjianhua.springboot.jdbc.config.TransactionalFailEnum;
 import com.github.chenjianhua.springboot.jdbc.mybatisplus.model.Book;
 import com.github.chenjianhua.springboot.jdbc.mybatisplus.mapper.BookMybatisPlusMapper;
 import com.github.chenjianhua.springboot.jdbc.param.BookMybatisPlusParam;
@@ -34,10 +35,10 @@ public class BookMybatisPlusService extends AbstractService<BookMybatisPlusMappe
     @Transactional(rollbackFor = Exception.class)
     void protectClassMethod() {
         Book book = new Book();
-        book.setBookName("非public方法导致@Transactional失效");
+        book.setBookName(TransactionalFailEnum.protectClassMethod.getDescription());
         int result = baseMapper.insert(book);
         if (result > 0) {
-            throw new BussinessException("非public方法导致@Transactional失效");
+            throw new BussinessException(TransactionalFailEnum.protectClassMethod.getDescription());
         }
     }
 
@@ -52,10 +53,10 @@ public class BookMybatisPlusService extends AbstractService<BookMybatisPlusMappe
     @Transactional(rollbackFor = Exception.class)
     public void sameClassMethod() {
         Book book = new Book();
-        book.setBookName("同一个类中方法调用，导致@Transactional失效");
+        book.setBookName(TransactionalFailEnum.sameClassMethod.getDescription());
         int result = baseMapper.insert(book);
         if (result > 0) {
-            throw new BussinessException("同一个类中方法调用，导致@Transactional失效");
+            throw new BussinessException(TransactionalFailEnum.sameClassMethod.getDescription());
         }
     }
 
@@ -65,10 +66,10 @@ public class BookMybatisPlusService extends AbstractService<BookMybatisPlusMappe
     @Transactional(rollbackFor = BussinessException.class)
     public void rollbackForError() throws Exception {
         Book book = new Book();
-        book.setBookName("@Transactional注解属性rollbackFor设置错误");
+        book.setBookName(TransactionalFailEnum.rollbackForError.getDescription());
         int result = baseMapper.insert(book);
         if (result > 0) {
-            throw new Exception("@Transactional 注解属性rollbackFor设置错误");
+            throw new Exception(TransactionalFailEnum.rollbackForError.getDescription());
         }
     }
 
@@ -79,12 +80,12 @@ public class BookMybatisPlusService extends AbstractService<BookMybatisPlusMappe
      * TransactionDefinition.PROPAGATION_NEVER：以非事务方式运行，如果当前存在事务，则抛出异常。
      */
     @Transactional(rollbackFor = BussinessException.class, propagation = Propagation.NEVER)
-    public void propagationError() throws Exception {
+    public void propagationError() {
         Book book = new Book();
-        book.setBookName("@Transactional 注解属性propagation设置错误");
+        book.setBookName(TransactionalFailEnum.propagationError.getDescription());
         int result = baseMapper.insert(book);
         if (result > 0) {
-            throw new Exception("@Transactional 注解属性propagation设置错误");
+            throw new BussinessException(TransactionalFailEnum.propagationError.getDescription());
         }
     }
 
@@ -95,10 +96,10 @@ public class BookMybatisPlusService extends AbstractService<BookMybatisPlusMappe
     public void tryCatchException() {
         try {
             Book book = new Book();
-            book.setBookName("异常被catch捕获导致@Transactional失效");
+            book.setBookName(TransactionalFailEnum.tryCatchException.getDescription());
             int result = baseMapper.insert(book);
             if (result > 0) {
-                throw new Exception("异常被catch捕获导致@Transactional失效");
+                throw new Exception(TransactionalFailEnum.tryCatchException.getDescription());
             }
         } catch (Exception e) {
             e.printStackTrace();

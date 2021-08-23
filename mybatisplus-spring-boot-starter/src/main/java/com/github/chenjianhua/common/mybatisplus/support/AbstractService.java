@@ -85,8 +85,8 @@ public abstract class AbstractService<M extends BaseMapper<T>, T> extends Servic
     public <E> PageVo<E> convertPage(IPage<T> iPage, Class<E> clazz) {
         PageVo<E> pageVo = new PageVo<>();
         pageVo.setRows(convert(iPage.getRecords(), clazz));
-        pageVo.setPage((int) iPage.getCurrent());
-        pageVo.setSize((int) iPage.getSize());
+        pageVo.setCurrentPage((int) iPage.getCurrent());
+        pageVo.setPageSize((int) iPage.getSize());
         pageVo.setTotal((int) iPage.getTotal());
         return pageVo;
     }
@@ -101,8 +101,8 @@ public abstract class AbstractService<M extends BaseMapper<T>, T> extends Servic
     public <E> PageVo<E> convertPage(IPage<E> iPage) {
         PageVo<E> pageVo = new PageVo<>();
         pageVo.setRows(iPage.getRecords());
-        pageVo.setPage((int) iPage.getCurrent());
-        pageVo.setSize((int) iPage.getSize());
+        pageVo.setCurrentPage((int) iPage.getCurrent());
+        pageVo.setPageSize((int) iPage.getSize());
         pageVo.setTotal((int) iPage.getTotal());
         return pageVo;
     }

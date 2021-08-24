@@ -5,7 +5,6 @@ package com.github.common.config.exception;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.common.resp.ResponseStatusEnum;
 import com.github.common.resp.ResponseVO;
-import com.github.common.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.BindException;
@@ -33,7 +32,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(value = Exception.class)
 	public ResponseVO defaultErrorHandler(Exception e) {
 		log.error("Exception", e);
-		return ResponseUtil.fail(ResponseStatusEnum.SERVER_ERROR);
+		return ResponseVO.fail(ResponseStatusEnum.SERVER_ERROR);
 	}
 
 	/**
@@ -44,7 +43,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	public ResponseVO httpRequestMethodHandler() {
 		log.error("Catch HttpRequestMethodNotSupportedException");
-		return ResponseUtil.fail(ResponseStatusEnum.REQUEST_METHOD_ERROR);
+		return ResponseVO.fail(ResponseStatusEnum.REQUEST_METHOD_ERROR);
 	}
 
 	/**
@@ -89,7 +88,7 @@ public class GlobalExceptionHandler {
 		String message = e.getBindingResult().getAllErrors()
 				.stream().map(DefaultMessageSourceResolvable::getDefaultMessage)
 				.collect(Collectors.joining());
-		ResponseVO<String> response = ResponseUtil.fail(ResponseStatusEnum.PARAMETER_CHECK_ERROR);
+		ResponseVO<String> response = ResponseVO.fail(ResponseStatusEnum.PARAMETER_CHECK_ERROR);
 		response.setData(message);
 		return response;
 	}
@@ -112,7 +111,7 @@ public class GlobalExceptionHandler {
 		log.info("ConstraintViolationException Handler--- ERROR: {}", e.getConstraintViolations());
 		String message = e.getConstraintViolations().stream()
 				.map(ConstraintViolation::getMessage).collect(Collectors.joining());
-		ResponseVO<String> response = ResponseUtil.fail(ResponseStatusEnum.PARAMETER_CHECK_ERROR);
+		ResponseVO<String> response = ResponseVO.fail(ResponseStatusEnum.PARAMETER_CHECK_ERROR);
 		response.setData(message);
 		return response;
 	}
@@ -133,7 +132,7 @@ public class GlobalExceptionHandler {
 		StringBuffer errorMsg = new StringBuffer();
 		errors.forEach(x -> errorMsg.append(x.getDefaultMessage()).append(";"));
 		log.error("MethodArgumentNotValidException Handler--- ERROR: {}", errorMsg.toString());
-		ResponseVO<String> response = ResponseUtil.fail(ResponseStatusEnum.PARAMETER_CHECK_ERROR);
+		ResponseVO<String> response = ResponseVO.fail(ResponseStatusEnum.PARAMETER_CHECK_ERROR);
 		response.setData(errorMsg.toString());
 		return response;
 	}

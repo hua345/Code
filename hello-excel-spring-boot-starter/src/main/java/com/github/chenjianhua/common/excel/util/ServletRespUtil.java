@@ -1,6 +1,6 @@
 package com.github.chenjianhua.common.excel.util;
 
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +18,7 @@ public class ServletRespUtil {
 
     public static void writeJson(Object obj, HttpServletResponse response) {
         try {
-            String s = JsonUtils.toJSONString(obj);
+            String s = JsonUtil.toJsonString(obj);
             writer(s, response);
         } catch (IOException e) {
             log.error("导入导出异常", e);

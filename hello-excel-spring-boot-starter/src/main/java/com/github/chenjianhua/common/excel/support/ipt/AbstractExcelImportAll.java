@@ -6,7 +6,6 @@ import com.github.chenjianhua.common.excel.bo.ipt.ImportDataMeta;
 import com.github.chenjianhua.common.excel.support.eventlistener.AbstractKtAnalysisEventListener;
 import com.github.chenjianhua.common.excel.support.eventlistener.AbstractKtWriteFileAnalysisEventListener;
 import com.github.chenjianhua.common.excel.support.template.ImportTemplate;
-import com.szkunton.common.ktcommon.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

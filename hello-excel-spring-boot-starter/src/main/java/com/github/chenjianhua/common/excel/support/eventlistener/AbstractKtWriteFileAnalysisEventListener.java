@@ -8,14 +8,14 @@ import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.github.chenjianhua.common.excel.enums.ExcelConstants;
-import com.szkunton.common.ktcommon.exception.BusinessException;
 import com.github.chenjianhua.common.excel.example.UploadDataModel;
 import com.github.chenjianhua.common.excel.support.writehandler.DefaultStylesUtil;
 import com.github.chenjianhua.common.excel.support.writehandler.ResultWriteHandler;
 import com.github.chenjianhua.common.excel.util.ExcelSheetUtil;
 import com.github.chenjianhua.common.excel.util.ExportReflectUtil;
 import com.github.chenjianhua.common.excel.util.UuidUtil;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.common.config.exception.BusinessException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,7 +60,7 @@ public abstract class AbstractKtWriteFileAnalysisEventListener<T> extends Abstra
      */
     @Override
     public void invokeHeadMap(Map<Integer, String> headMap, AnalysisContext context) {
-        log.info("解析到一条头数据:{}", JsonUtils.toJSONString(headMap));
+        log.info("解析到一条头数据:{}", JsonUtil.toJsonString(headMap));
         this.headMap = headMap;
         try {
             this.resultTempFile = Files.createTempFile(ExcelConstants.IMPORT_RESULT_NAME + UuidUtil.getUuid32(), ExcelTypeEnum.XLSX.getValue()).toFile();
@@ -128,7 +128,7 @@ public abstract class AbstractKtWriteFileAnalysisEventListener<T> extends Abstra
                 doAfterAllProcessData(allReadRows);
             } catch (Exception e) {
                 log.error("数据导入异常：", e);
-                throw new BusinessException("数据插入失败", e);
+                throw new BusinessException("数据插入失败");
             }
         }
         excelWriter.finish();
@@ -140,7 +140,7 @@ public abstract class AbstractKtWriteFileAnalysisEventListener<T> extends Abstra
         AbstractKtAnalysisEventListener ktDefaultAnalysisEventListener = new AbstractKtWriteFileAnalysisEventListener<UploadDataModel>(true) {
             @Override
             public void processData(UploadDataModel rowData, AnalysisContext context) {
-                log.info(JsonUtils.toJSONString(rowData));
+                log.info(JsonUtil.toJsonString(rowData));
             }
 
             @Override

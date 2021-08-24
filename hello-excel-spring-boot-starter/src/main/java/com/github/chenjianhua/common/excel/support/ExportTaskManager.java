@@ -5,11 +5,11 @@ import com.github.chenjianhua.common.excel.service.ExcelServerRequestService;
 import com.github.chenjianhua.common.excel.util.ThreadPoolUtil;
 import com.github.chenjianhua.common.excel.util.UuidUtil;
 import com.github.chenjianhua.common.excel.vo.ExportCallback;
-import com.szkunton.common.ktcommon.exception.BusinessException;
-import com.szkunton.common.ktcommon.vo.ResponseStatus;
+import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.common.config.exception.BusinessException;
+import com.github.common.resp.ResponseVO;
 import com.github.chenjianhua.common.excel.support.ept.ExcelExportStrategy;
 import com.github.chenjianhua.common.excel.util.ApplicationContextUtil;
-import com.szkunton.common.ktjson.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -26,7 +26,7 @@ import java.util.concurrent.*;
 @Slf4j
 @Component
 public class ExportTaskManager implements ApplicationRunner {
-    private static final CompletionService<ResponseStatus<ExportCallback>> exportExcelCompletionService = new ExecutorCompletionService<>(ThreadPoolUtil.getInstance());
+    private static final CompletionService<ResponseVO<ExportCallback>> exportExcelCompletionService = new ExecutorCompletionService<>(ThreadPoolUtil.getInstance());
 
     /**
      * 同时支持10个导出
@@ -46,23 +46,23 @@ public class ExportTaskManager implements ApplicationRunner {
         }
         ExcelServerRequestService excelServerRequestService = ApplicationContextUtil.getBean(ExcelServerRequestService.class);
         // 创建导出任务
-        ResponseStatus responseStatus = excelServerRequestService.addExportHis(taskMeta);
+        ResponseVO responseStatus = excelServerRequestService.addExportHis(taskMeta);
         if (!responseStatus.isSuccess()) {
-            log.info("创建导出记录失败 :{}", JsonUtils.toJSONString(responseStatus));
+            log.info("创建导出记录失败 :{}", JsonUtil.toJsonString(responseStatus));
             throw new BusinessException("创建导出记录失败");
         }
         return null;
     }
 
 
-    public static ResponseStatus<ExportCallback> excelExport(ExportTaskMeta taskMeta) {
+    public static ResponseVO<ExportCallback> excelExport(ExportTaskMeta taskMeta) {
         taskMeta.setTaskNumber(UuidUtil.getUuid32());
         ExcelServerRequestService excelServerRequestService = ApplicationContextUtil.getBean(ExcelServerRequestService.class);
         try {
             checkExcelExportParam(taskMeta);
         } catch (BusinessException e) {
             log.info(e.getMessage());
-            return ResponseStatus.error(e.getMessage());
+            return ResponseVO.fail(e.getMessage(), null);
         }
         ExportCallback exportCallback = new ExportCallback();
         try {
@@ -72,14 +72,14 @@ public class ExportTaskManager implements ApplicationRunner {
             if (!taskMeta.isSyncTask()) {
                 // 异步执行，不返回文件路径
                 exportExcelCompletionService.submit(() -> ExcelProcessor.exportExcel(taskMeta));
-                return ResponseStatus.ok(exportCallback);
+                return ResponseVO.ok(exportCallback);
             } else {
                 return ExcelProcessor.exportExcel(taskMeta);
             }
         } catch (Exception e) {
             log.error("[{}]导出失败", taskMeta.getTaskNumber(), e);
             excelServerRequestService.updateExportErrorResult(taskMeta, "上传文件异常");
-            return ResponseStatus.error(500, "导出失败!", exportCallback);
+            return ResponseVO.fail("导出失败!", exportCallback);
         } finally {
             // 只释放同步任务信号量，异步任务在异步完成时释放
             if (taskMeta.isSyncTask()) {
@@ -91,9 +91,9 @@ public class ExportTaskManager implements ApplicationRunner {
     private void handleAsyncTask() {
         while (true) {
             try {
-                Future<ResponseStatus<ExportCallback>> future = exportExcelCompletionService.take();
+                Future<ResponseVO<ExportCallback>> future = exportExcelCompletionService.take();
                 try {
-                    ResponseStatus<ExportCallback> callback = future.get();
+                    ResponseVO<ExportCallback> callback = future.get();
                 } catch (ExecutionException e) {
                     log.error("获取导出结果异常", e);
                 }

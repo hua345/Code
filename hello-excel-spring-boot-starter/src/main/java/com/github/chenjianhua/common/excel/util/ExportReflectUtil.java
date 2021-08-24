@@ -1,9 +1,8 @@
 package com.github.chenjianhua.common.excel.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.chenjianhua.common.excel.bo.TableFieldInfoBo;
 import com.github.chenjianhua.common.excel.example.UploadDataModel;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -41,7 +40,7 @@ public class ExportReflectUtil {
                 rowData.add(field.get(obj));
             }
         } catch (Exception e) {
-            log.error("获取类字段信息失败:{}", JsonUtils.toJSONString(e));
+            log.error("获取类字段信息失败:{}", JsonUtil.toJsonString(e));
         }
         return rowData;
     }
@@ -50,6 +49,6 @@ public class ExportReflectUtil {
         UploadDataModel uploadDataModel = new UploadDataModel();
         uploadDataModel.setNodeCode("123456");
         uploadDataModel.setCustomerName("陈建华");
-        log.info(JsonUtils.toJSONString(ExportReflectUtil.getClassFieldValue(uploadDataModel)));
+        log.info(JsonUtil.toJsonString(ExportReflectUtil.getClassFieldValue(uploadDataModel)));
     }
 }

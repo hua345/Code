@@ -25,6 +25,7 @@ public class OosConfig {
 
 	public String accessKeySecret = "accessKeySecret";
 
+	public String bucketName = "bucketName";
 
 	public String getEndpoint(){
 		return new String(base64.decode(endpoint));

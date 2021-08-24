@@ -2,7 +2,7 @@ package com.github.chenjianhua.common.excel.util;
 
 import com.github.chenjianhua.common.excel.bo.BeginAndEndTimeBo;
 import com.github.chenjianhua.common.excel.bo.PageSplitBo;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -143,20 +143,20 @@ public class ExcelSplitUtil {
         LocalDateTime startLocalDateTime = LocalDateTime.of(2020, 12, 01, 00, 00, 00);
         LocalDateTime endLocalDateTime = LocalDateTime.of(2020, 12, 30, 23, 59, 59);
         List<BeginAndEndTimeBo> beginAndEndTimeBos = splitByDay(16 * 1000L, startLocalDateTime, endLocalDateTime);
-        beginAndEndTimeBos.forEach(item -> log.info(JsonUtils.toJSONString(item)));
+        beginAndEndTimeBos.forEach(item -> log.info(JsonUtil.toJsonString(item)));
         beginAndEndTimeBos = splitByDay(16 * 1000L, startLocalDateTime, null);
-        beginAndEndTimeBos.forEach(item -> log.info(JsonUtils.toJSONString(item)));
+        beginAndEndTimeBos.forEach(item -> log.info(JsonUtil.toJsonString(item)));
 
         beginAndEndTimeBos = splitByHour(16 * 1000L, startLocalDateTime, endLocalDateTime);
-        beginAndEndTimeBos.forEach(item -> log.info(JsonUtils.toJSONString(item)));
+        beginAndEndTimeBos.forEach(item -> log.info(JsonUtil.toJsonString(item)));
         beginAndEndTimeBos = splitByHour(16 * 1000L, startLocalDateTime, null);
-        beginAndEndTimeBos.forEach(item -> log.info(JsonUtils.toJSONString(item)));
+        beginAndEndTimeBos.forEach(item -> log.info(JsonUtil.toJsonString(item)));
 
         List<PageSplitBo> pageSplitBos = splitPage(160, 20);
-        pageSplitBos.forEach(item -> log.info(JsonUtils.toJSONString(item)));
+        pageSplitBos.forEach(item -> log.info(JsonUtil.toJsonString(item)));
         pageSplitBos = splitPage(162, 20);
-        pageSplitBos.forEach(item -> log.info(JsonUtils.toJSONString(item)));
+        pageSplitBos.forEach(item -> log.info(JsonUtil.toJsonString(item)));
         pageSplitBos = splitPage(2, 20);
-        pageSplitBos.forEach(item -> log.info(JsonUtils.toJSONString(item)));
+        pageSplitBos.forEach(item -> log.info(JsonUtil.toJsonString(item)));
     }
 }

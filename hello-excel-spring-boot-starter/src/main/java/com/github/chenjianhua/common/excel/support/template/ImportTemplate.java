@@ -6,7 +6,7 @@ import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
 import com.github.chenjianhua.common.excel.bo.ipt.ImportedMeta;
 import com.github.chenjianhua.common.excel.support.eventlistener.AbstractKtAnalysisEventListener;
 import com.github.chenjianhua.common.excel.support.ipt.ExcelImportStrategy;
-import com.szkunton.common.ktcommon.exception.BusinessException;
+import com.github.common.config.exception.BusinessException;
 import org.springframework.core.ResolvableType;
 
 import java.io.IOException;

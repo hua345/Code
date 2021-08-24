@@ -14,11 +14,11 @@ import com.github.chenjianhua.common.excel.util.ExcelUploadUtil;
 import com.github.chenjianhua.common.excel.vo.ExportCallback;
 import com.github.chenjianhua.common.excel.vo.ImportCallback;
 import com.github.chenjianhua.common.excel.vo.UpdateExportHisResultParam;
-import com.szkunton.common.ktcommon.exception.BusinessException;
-import com.szkunton.common.ktcommon.vo.ResponseStatus;
+import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.common.config.exception.BusinessException;
+import com.github.common.resp.ResponseVO;
 import com.github.chenjianhua.common.excel.support.ept.ExcelExportStrategy;
 import com.github.chenjianhua.common.excel.vo.UpdateImportHisResultParam;
-import com.szkunton.common.ktjson.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +37,7 @@ public class ExcelProcessor {
      *
      * @return 返回经过文件路径
      */
-    public static ResponseStatus<ImportCallback> importExcel(ImportTaskMeta taskMeta) {
+    public static ResponseVO<ImportCallback> importExcel(ImportTaskMeta taskMeta) {
         ImportCallback importCallback = new ImportCallback();
         importCallback.setTaskNumber(taskMeta.getTaskNumber());
         ExcelImportStrategy strategy = ExcelStrategySelector.getImportStrategy(taskMeta.getImportCode());
@@ -51,11 +51,11 @@ public class ExcelProcessor {
         ImportedMeta importedMeta = null;
         try {
             importedMeta = strategy.doImport(taskMeta);
-            log.info("[{}]导入结果{}", taskMeta.getTaskNumber(), JsonUtils.toJSONString(importedMeta));
+            log.info("[{}]导入结果{}", taskMeta.getTaskNumber(), JsonUtil.toJsonString(importedMeta));
             FileUploadResponse uploadResponse = null;
             if (Objects.nonNull(importedMeta)) {
                 uploadResponse = ExcelUploadUtil.uploadImport(importedMeta.getResultTempFile());
-                log.info("[{}]上传结果{}", taskMeta.getTaskNumber(), JsonUtils.toJSONString(uploadResponse));
+                log.info("[{}]上传结果{}", taskMeta.getTaskNumber(), JsonUtil.toJsonString(uploadResponse));
             }
             // 检查导出文件上传状态
             if (null == uploadResponse || ExcelConstants.RESP_SUCCESS_STATUS != uploadResponse.getCode()) {
@@ -74,11 +74,11 @@ public class ExcelProcessor {
         } catch (BusinessException e) {
             excelServerRequestService.updateImportErrorResult(taskMeta, e.getMessage());
             log.error("[{}]导入失败", taskMeta.getTaskNumber(), e);
-            return ResponseStatus.error(ExcelConstants.RESP_FAIL_STATUS, "导出任务处理失败," + e.getMessage(), importCallback);
+            return ResponseVO.fail("导出任务处理失败," + e.getMessage(), importCallback);
         } catch (Exception e) {
             excelServerRequestService.updateImportErrorResult(taskMeta, null);
             log.error("[{}]导入失败", taskMeta.getTaskNumber(), e);
-            return ResponseStatus.error(ExcelConstants.RESP_FAIL_STATUS, "导入任务处理失败", importCallback);
+            return ResponseVO.fail("导入任务处理失败", importCallback);
         } finally {
             // 删除temp文件
             if (null != taskMeta.getUploadOriginTempFile()) {
@@ -89,7 +89,7 @@ public class ExcelProcessor {
             }
         }
 
-        return ResponseStatus.ok(importCallback);
+        return ResponseVO.ok(importCallback);
     }
 
     /**
@@ -97,7 +97,7 @@ public class ExcelProcessor {
      *
      * @return 返回经过文件路径
      */
-    public static ResponseStatus<ExportCallback> exportExcel(ExportTaskMeta taskMeta) {
+    public static ResponseVO<ExportCallback> exportExcel(ExportTaskMeta taskMeta) {
         ExportCallback exportCallback = new ExportCallback();
         exportCallback.setTaskNumber(taskMeta.getTaskNumber());
         // 更新导出任务状态
@@ -113,11 +113,11 @@ public class ExcelProcessor {
         ExportedMeta exportedMeta = null;
         try {
             exportedMeta = strategy.doExport(taskMeta);
-            log.info("[{}]导出结果{}", taskMeta.getTaskNumber(), JsonUtils.toJSONString(exportedMeta));
+            log.info("[{}]导出结果{}", taskMeta.getTaskNumber(), JsonUtil.toJsonString(exportedMeta));
             FileUploadResponse uploadResponse = null;
             if (Objects.nonNull(exportedMeta)) {
                 uploadResponse = ExcelUploadUtil.uploadExport(exportedMeta);
-                log.info("[{}]上传结果{}", taskMeta.getTaskNumber(), JsonUtils.toJSONString(uploadResponse));
+                log.info("[{}]上传结果{}", taskMeta.getTaskNumber(), JsonUtil.toJsonString(uploadResponse));
             }
             // 检查导出文件上传状态
             if (null == uploadResponse || ExcelConstants.RESP_SUCCESS_STATUS != uploadResponse.getCode()) {
@@ -132,18 +132,18 @@ public class ExcelProcessor {
         } catch (BusinessException e) {
             excelServerRequestService.updateExportErrorResult(taskMeta, e.getMessage());
             log.error("[{}]导出失败", taskMeta.getTaskNumber(), e);
-            return ResponseStatus.error(500, "导出任务处理失败," + e.getMessage(), exportCallback);
+            return ResponseVO.fail("导出任务处理失败," + e.getMessage(), exportCallback);
         } catch (Exception e) {
             excelServerRequestService.updateExportErrorResult(taskMeta, null);
             log.error("[{}]导出失败", taskMeta.getTaskNumber(), e);
-            return ResponseStatus.error(500, "导出任务处理失败", exportCallback);
+            return ResponseVO.fail("导出任务处理失败", exportCallback);
         } finally {
             // 删除temp文件
             if (null != exportedMeta && null != exportedMeta.getExportFileMeta() && null != exportedMeta.getExportFileMeta().getExportFile()) {
                 exportedMeta.getExportFileMeta().getExportFile().delete();
             }
         }
-        return ResponseStatus.ok(exportCallback);
+        return ResponseVO.ok(exportCallback);
     }
 
 }

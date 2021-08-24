@@ -2,8 +2,8 @@ package com.github.chenjianhua.common.excel.support.eventlistener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.szkunton.common.ktcommon.exception.BusinessException;
 import com.github.chenjianhua.common.excel.util.ApplicationContextUtil;
+import com.github.common.config.exception.BusinessException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

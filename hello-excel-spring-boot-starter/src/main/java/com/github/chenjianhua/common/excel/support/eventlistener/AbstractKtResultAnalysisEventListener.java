@@ -6,11 +6,10 @@ import com.alibaba.excel.util.StyleUtil;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.github.chenjianhua.common.excel.enums.ExcelConstants;
 import com.github.chenjianhua.common.excel.util.ExcelStyleUtil;
-import com.szkunton.common.ktcommon.exception.BusinessException;
-import com.szkunton.common.ktcommon.exception.SystemException;
 import com.github.chenjianhua.common.excel.example.UploadDataModel;
 import com.github.chenjianhua.common.excel.util.UuidUtil;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.common.config.exception.BusinessException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -47,7 +46,7 @@ public abstract class AbstractKtResultAnalysisEventListener<T> extends AbstractK
      */
     @Override
     public void invokeHeadMap(Map<Integer, String> headMap, AnalysisContext context) {
-        log.info("解析到一条头数据:{}", JsonUtils.toJSONString(headMap));
+        log.info("解析到一条头数据:{}", JsonUtil.toJsonString(headMap));
         this.headMap = headMap;
         try {
             if (null != context.readWorkbookHolder().getFile()) {
@@ -135,7 +134,7 @@ public abstract class AbstractKtResultAnalysisEventListener<T> extends AbstractK
                 doAfterAllProcessData(allReadRows);
             } catch (Exception e) {
                 log.error("数据导入异常：", e);
-                throw new BusinessException("数据插入失败", e);
+                throw new BusinessException("数据插入失败");
             }
         }
         try {
@@ -148,7 +147,7 @@ public abstract class AbstractKtResultAnalysisEventListener<T> extends AbstractK
             this.resultTempFile = resultFile;
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw new SystemException(e);
+            throw new BusinessException(e.getMessage());
         }
     }
 
@@ -156,7 +155,7 @@ public abstract class AbstractKtResultAnalysisEventListener<T> extends AbstractK
         AbstractKtAnalysisEventListener ktDefaultAnalysisEventListener = new AbstractKtResultAnalysisEventListener<UploadDataModel>() {
             @Override
             public void processData(UploadDataModel rowData, AnalysisContext context) {
-                log.info(JsonUtils.toJSONString(rowData));
+                log.info(JsonUtil.toJsonString(rowData));
             }
         };
         String fileName = "/Users/chenjianhua/Desktop" + File.separator + "商品交易明细报表1275169920506234600.xlsx";

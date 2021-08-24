@@ -3,7 +3,7 @@ package com.github.chenjianhua.common.excel.example;
 import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
 import com.github.chenjianhua.common.excel.annotation.ImportStrategy;
 import com.github.chenjianhua.common.excel.support.ipt.AbstractExcelImportAll;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,7 @@ public class TestImportStrategyAll extends AbstractExcelImportAll<UploadDataMode
      */
     @Override
     public void rowDataCheck(UploadDataModel rowData) {
-        log.info(JsonUtils.toJSONString(rowData));
+        log.info(JsonUtil.toJsonString(rowData));
     }
 
     /**

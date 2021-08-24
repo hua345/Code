@@ -2,7 +2,7 @@ package com.github.chenjianhua.common.excel.example;
 
 
 import com.github.chenjianhua.common.excel.bo.TableFieldInfoBo;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class TestService {
     private AtomicInteger testData = new AtomicInteger(1);
 
     public Long countData(TestExportParam param) {
-        log.info("统计数据总数 param:{}", JsonUtils.toJSONString(param));
+        log.info("统计数据总数 param:{}", JsonUtil.toJsonString(param));
         return 1000L;
     }
 
@@ -41,7 +41,7 @@ public class TestService {
 
 
     public List<TestModel> findTestData(TestExportParam param) {
-        log.info("查询数据 param:{}", JsonUtils.toJSONString(param));
+        log.info("查询数据 param:{}", JsonUtil.toJsonString(param));
         List<TestModel> testModels = new ArrayList<>(154);
         for (int i = 1; i <= 200; i++) {
             TestModel testModel = new TestModel();

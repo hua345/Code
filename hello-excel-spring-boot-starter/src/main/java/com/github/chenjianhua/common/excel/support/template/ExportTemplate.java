@@ -5,10 +5,10 @@ import com.github.chenjianhua.common.excel.bo.ept.ExportDataMeta;
 import com.github.chenjianhua.common.excel.bo.ept.ExportFileMeta;
 import com.github.chenjianhua.common.excel.bo.ept.ExportTaskMeta;
 import com.github.chenjianhua.common.excel.bo.ept.ExportedMeta;
-import com.szkunton.common.ktcommon.exception.BusinessException;
 import com.github.chenjianhua.common.excel.bo.TableFieldInfoBo;
 import com.github.chenjianhua.common.excel.support.ept.ExcelExportStrategy;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.common.config.exception.BusinessException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ResolvableType;
@@ -111,7 +111,7 @@ public abstract class ExportTemplate<T, P> implements ExcelExportStrategy {
                 throw new BusinessException("解析参数失败!");
             }
         }
-        return JsonUtils.toBean(JsonUtils.toJSONString(jsonObj), this.paramClazz);
+        return JsonUtil.toBean(JsonUtil.toJsonString(jsonObj), this.paramClazz);
     }
 
 
@@ -151,7 +151,7 @@ public abstract class ExportTemplate<T, P> implements ExcelExportStrategy {
         exportedMeta.setFileSize(exportedMeta.getExportFileMeta().getFileSize());
         exportedMeta.setTotalRecord(exportedMeta.getExportFileMeta().getTotalRecord());
         exportedMeta.setEndTime(LocalDateTime.now());
-        log.info("导出结果:{}", JsonUtils.toJSONString(exportedMeta));
+        log.info("导出结果:{}", JsonUtil.toJsonString(exportedMeta));
         return exportedMeta;
     }
 
@@ -169,7 +169,7 @@ public abstract class ExportTemplate<T, P> implements ExcelExportStrategy {
                 } catch (IllegalAccessException e) {
                     log.error("{}获取动态导出字段失败:{}", exportDataMeta.getTaskMeta().getTaskNumber(), e);
                 }
-                log.info("{}动态导出字段:{}", exportDataMeta.getTaskMeta().getTaskNumber(), JsonUtils.toJSONString(exportDataMeta.getExportFields()));
+                log.info("{}动态导出字段:{}", exportDataMeta.getTaskMeta().getTaskNumber(), JsonUtil.toJsonString(exportDataMeta.getExportFields()));
             }
 
         }

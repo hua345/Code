@@ -1,10 +1,9 @@
 package com.github.chenjianhua.common.excel.example;
 
-import com.alibaba.excel.context.AnalysisContext;
 import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
 import com.github.chenjianhua.common.excel.annotation.ImportStrategy;
 import com.github.chenjianhua.common.excel.support.ipt.AbstractExcelImport;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +23,7 @@ public class TestImportStrategy extends AbstractExcelImport<UploadDataModel> {
      */
     @Override
     public void importedRowHandle(UploadDataModel rowData) {
-        log.info(JsonUtils.toJSONString(rowData));
+        log.info(JsonUtil.toJsonString(rowData));
     }
 
     public static void main(String[] args) throws IOException {

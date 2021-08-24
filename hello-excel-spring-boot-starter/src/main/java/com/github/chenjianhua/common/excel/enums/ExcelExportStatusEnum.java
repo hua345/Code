@@ -2,7 +2,7 @@ package com.github.chenjianhua.common.excel.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.szkunton.common.ktcommon.core.enums.BaseEnum;
+import com.github.common.enums.BaseEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

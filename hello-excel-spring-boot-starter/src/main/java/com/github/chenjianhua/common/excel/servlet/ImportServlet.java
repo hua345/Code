@@ -3,14 +3,13 @@ package com.github.chenjianhua.common.excel.servlet;
 import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
 import com.github.chenjianhua.common.excel.enums.LoginInfoConstant;
 import com.github.chenjianhua.common.excel.util.ServletRespUtil;
-import com.szkunton.common.ktcommon.exception.BusinessException;
-import com.szkunton.common.ktcommon.vo.ResponseStatus;
 import com.github.chenjianhua.common.excel.support.ImportTaskManager;
 import com.github.chenjianhua.common.excel.vo.ImportCallback;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.common.config.exception.BusinessException;
+import com.github.common.resp.ResponseVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -51,7 +50,7 @@ public class ImportServlet extends HttpServlet {
             String importType = multipartRequest.getParameter(IMPORT_TYPE);
             MultipartFile file = multipartRequest.getFile(UPLOAD_FILE);
             String fileName = file.getOriginalFilename();
-            if (StringUtils.isEmpty(fileName) || 0 == file.getSize()) {
+            if (!StringUtils.hasLength(fileName) || 0 == file.getSize()) {
                 throw new BusinessException("上传文件为空");
             }
             String fileSuffix = fileName.substring(fileName.lastIndexOf(".") + 1);
@@ -60,13 +59,13 @@ public class ImportServlet extends HttpServlet {
             }
             doImport(file, importType, paramMap, request, response);
         } catch (Exception e) {
-            log.info("导入请求解析异常:{}", JsonUtils.toJSONString(e));
+            log.info("导入请求解析异常:{}", JsonUtil.toJsonString(e));
         }
     }
 
     private void doImport(MultipartFile file, String importType, Map<String, String[]> paramMap, HttpServletRequest request, HttpServletResponse response) {
         if (!StringUtils.hasText(importType)) {
-            ResponseStatus responseStatus = ResponseStatus.error("importType导入类型不能为空");
+            ResponseVO responseStatus = ResponseVO.fail("importType导入类型不能为空");
             ServletRespUtil.writeJson(responseStatus, response);
             return;
         }
@@ -84,7 +83,7 @@ public class ImportServlet extends HttpServlet {
         importTaskMeta.setImportArg(importArgs);
         // 获取用户登录信息
         handleToken(request, importTaskMeta);
-        ResponseStatus<ImportCallback> importResp = ImportTaskManager.excelImport(importTaskMeta);
+        ResponseVO<ImportCallback> importResp = ImportTaskManager.excelImport(importTaskMeta);
         ServletRespUtil.writeJson(importResp, response);
     }
 

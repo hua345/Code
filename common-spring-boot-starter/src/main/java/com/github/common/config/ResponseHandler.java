@@ -4,7 +4,6 @@ package com.github.common.config;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.common.resp.ResponseStatusEnum;
 import com.github.common.resp.ResponseVO;
-import com.github.common.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
@@ -54,9 +53,9 @@ public class ResponseHandler implements ResponseBodyAdvice<Object> {
 
         if (body == null) {
             if (String.class.equals(Objects.requireNonNull(returnType.getMethod()).getReturnType())) {
-                return JsonUtil.toJsonString(ResponseUtil.ok());
+                return JsonUtil.toJsonString(ResponseVO.ok());
             }
-            return ResponseUtil.ok();
+            return ResponseVO.ok();
         }
 
         if (body instanceof OutputStream) {
@@ -64,9 +63,9 @@ public class ResponseHandler implements ResponseBodyAdvice<Object> {
         } else if (body instanceof String) {
 
             response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-            return JsonUtil.toJsonString(ResponseUtil.ok(body));
+            return JsonUtil.toJsonString(ResponseVO.ok(body));
         } else {
-            return ResponseUtil.ok(body);
+            return ResponseVO.ok(body);
         }
     }
 }

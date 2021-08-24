@@ -2,11 +2,11 @@ package com.github.chenjianhua.common.excel.servlet;
 
 import com.github.chenjianhua.common.excel.bo.ept.ExportTaskMeta;
 import com.github.chenjianhua.common.excel.enums.LoginInfoConstant;
-import com.szkunton.common.ktcommon.vo.ResponseStatus;
 import com.github.chenjianhua.common.excel.support.ExportTaskManager;
 import com.github.chenjianhua.common.excel.util.ServletRespUtil;
 import com.github.chenjianhua.common.excel.vo.ExportCallback;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.common.resp.ResponseVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -56,7 +56,7 @@ public class ExportServlet extends HttpServlet {
     private void handleToken(HttpServletRequest request, ExportTaskMeta exportTaskMeta) {
         String token = request.getHeader(LoginInfoConstant.AUTH_TOKEN_KEY);
 
-        if (!StringUtils.isEmpty(token)) {
+        if (StringUtils.hasLength(token)) {
             exportTaskMeta.setAuthToken(token);
         }
     }
@@ -64,16 +64,16 @@ public class ExportServlet extends HttpServlet {
     private void doExport(String exportParam, HttpServletRequest request, HttpServletResponse response) {
         log.info("收到导出请求:{}", exportParam);
 
-        ExportTaskMeta exportTaskMeta = JsonUtils.toBean(exportParam, ExportTaskMeta.class);
+        ExportTaskMeta exportTaskMeta = JsonUtil.toBean(exportParam, ExportTaskMeta.class);
         if (null == exportTaskMeta || !StringUtils.hasText(exportTaskMeta.getExportCode())) {
-            ResponseStatus responseStatus = ResponseStatus.error("exportCode导出类型不能为空,参数格式为{'exportCode':'导出类型','exportArg':'导出参数'}");
+            ResponseVO responseStatus = ResponseVO.fail("exportCode导出类型不能为空,参数格式为{'exportCode':'导出类型','exportArg':'导出参数'}");
             ServletRespUtil.writeJson(responseStatus, response);
             return;
         }
         exportTaskMeta.setSyncTask(!request.getRequestURI().endsWith("async"));
         // 获取用户登录信息
         handleToken(request, exportTaskMeta);
-        ResponseStatus<ExportCallback> exportResp = ExportTaskManager.excelExport(exportTaskMeta);
+        ResponseVO<ExportCallback> exportResp = ExportTaskManager.excelExport(exportTaskMeta);
         ServletRespUtil.writeJson(exportResp, response);
     }
 }

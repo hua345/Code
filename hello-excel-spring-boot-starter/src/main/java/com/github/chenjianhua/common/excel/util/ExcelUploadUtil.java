@@ -4,10 +4,10 @@ import com.alibaba.excel.support.ExcelTypeEnum;
 import com.github.chenjianhua.common.excel.bo.ept.ExportedMeta;
 import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
 import com.github.chenjianhua.common.excel.enums.ExcelConstants;
-import com.szkunton.common.ktcommon.exception.BusinessException;
 import com.github.chenjianhua.common.excel.bo.FileUploadResponse;
 import com.github.chenjianhua.common.excel.support.UploadHandler;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.common.config.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,7 +33,7 @@ public class ExcelUploadUtil {
         File uploadOriginFile = ExcelUploadUtil.uploadFileToTempFile(taskMeta.getFile());
         // 上传导入原始文件到oss
         FileUploadResponse fileUploadResponse = ExcelUploadUtil.uploadImport(uploadOriginFile);
-        log.info("导入[{}]原文件上传结果{}", taskMeta.getTaskNumber(), JsonUtils.toJSONString(fileUploadResponse));
+        log.info("导入[{}]原文件上传结果{}", taskMeta.getTaskNumber(), JsonUtil.toJsonString(fileUploadResponse));
         // 检查导出文件上传状态
         if (null == fileUploadResponse || ExcelConstants.RESP_SUCCESS_STATUS != fileUploadResponse.getCode()) {
             throw new BusinessException("上传导入原文件异常");

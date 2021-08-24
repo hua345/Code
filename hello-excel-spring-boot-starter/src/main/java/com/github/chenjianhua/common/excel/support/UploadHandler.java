@@ -6,7 +6,7 @@ import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.github.chenjianhua.common.excel.bo.FileUploadResponse;
 import com.github.chenjianhua.common.excel.config.OosConfig;
-import com.szkunton.common.ktjson.util.JsonUtils;
+import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.util.StringUtils;
@@ -35,7 +35,7 @@ public class UploadHandler {
         try{
             String suffix = fileName.substring(fileName.lastIndexOf("."));
             tempFile = File.createTempFile("oss-temp-" + fileName, suffix);
-            FileUtils.writeByteArrayToFile(tempFile, JsonUtils.toByte(object));
+            FileUtils.writeByteArrayToFile(tempFile, JsonUtil.toByte(object));
             return upload(prefixFolder, fileName, tempFile);
         } catch(IOException e){
             log.error("上传文件异常", e);

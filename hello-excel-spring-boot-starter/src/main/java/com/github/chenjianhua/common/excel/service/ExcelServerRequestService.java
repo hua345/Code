@@ -7,15 +7,15 @@ import com.github.chenjianhua.common.excel.bo.ipt.ImportedMeta;
 import com.github.chenjianhua.common.excel.config.ExcelAutoProperties;
 import com.github.chenjianhua.common.excel.enums.ExcelExportStatusEnum;
 import com.github.chenjianhua.common.excel.vo.AddImportHisParam;
-import com.szkunton.common.ktcommon.exception.BusinessException;
-import com.szkunton.common.ktcommon.vo.ResponseStatus;
+import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.common.config.exception.BusinessException;
+import com.github.common.resp.ResponseVO;
 import com.github.chenjianhua.common.excel.bo.FileUploadResponse;
 import com.github.chenjianhua.common.excel.support.http.RestTemplateExcelService;
 import com.github.chenjianhua.common.excel.util.IpUtil;
 import com.github.chenjianhua.common.excel.vo.AddExportHisParam;
 import com.github.chenjianhua.common.excel.vo.UpdateExportHisResultParam;
 import com.github.chenjianhua.common.excel.vo.UpdateImportHisResultParam;
-import com.szkunton.common.ktjson.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -51,10 +51,10 @@ public class ExcelServerRequestService {
         return this.serverName;
     }
 
-    public ResponseStatus postJson(String uriPath, String json, String authToken) {
+    public ResponseVO postJson(String uriPath, String json, String authToken) {
         if (excelAutoProperties.getCloseExcelLog()) {
             log.info("忽略导入导出记录");
-            return ResponseStatus.ok();
+            return ResponseVO.ok();
         }
         StringBuilder sb = new StringBuilder();
         ResponseEntity<String> resp;
@@ -66,30 +66,30 @@ public class ExcelServerRequestService {
             resp = restTemplateExcelService.postJsonByServerName(excelAutoProperties.getExportServerName(), uriPath, json, authToken);
         }
         if (null != resp.getStatusCode() && resp.getStatusCode().is2xxSuccessful()) {
-            return JsonUtils.toBean(resp.getBody(), ResponseStatus.class);
+            return JsonUtil.toBean(resp.getBody(), ResponseVO.class);
         }
-        log.error("导出服务异常:{}", JsonUtils.toJSONString(resp));
+        log.error("导出服务异常:{}", JsonUtil.toJsonString(resp));
         throw new BusinessException("导出服务异常，请稍后再试");
     }
 
     /**
      * 创建导出任务
      */
-    public ResponseStatus addExportHis(ExportTaskMeta taskMeta) {
+    public ResponseVO addExportHis(ExportTaskMeta taskMeta) {
         // 创建任务
         AddExportHisParam addExportHisParam = new AddExportHisParam();
         addExportHisParam.setExportType(taskMeta.getExportCode());
         addExportHisParam.setTaskNumber(taskMeta.getTaskNumber());
-        addExportHisParam.setExportParam(JsonUtils.toJSONString(taskMeta.getExportArg()));
+        addExportHisParam.setExportParam(JsonUtil.toJsonString(taskMeta.getExportArg()));
         addExportHisParam.setSyncTask(taskMeta.isSyncTask());
         addExportHisParam.setExportOrigin(this.getCurrentServerName());
         addExportHisParam.setExportOriginIp(IpUtil.getServerIp());
         addExportHisParam.setStartTime(LocalDateTime.now());
-        log.info("创建导出任务 param:{}", JsonUtils.toJSONString(addExportHisParam));
-        return this.postJson("addExportHis", JsonUtils.toJSONString(addExportHisParam), taskMeta.getAuthToken());
+        log.info("创建导出任务 param:{}", JsonUtil.toJsonString(addExportHisParam));
+        return this.postJson("addExportHis", JsonUtil.toJsonString(addExportHisParam), taskMeta.getAuthToken());
     }
 
-    public ResponseStatus updateExportErrorResult(ExportTaskMeta taskMeta, String errorMsg) {
+    public ResponseVO updateExportErrorResult(ExportTaskMeta taskMeta, String errorMsg) {
         UpdateExportHisResultParam updateExportHisResultParam = new UpdateExportHisResultParam();
         updateExportHisResultParam.setTaskNumber(taskMeta.getTaskNumber());
         updateExportHisResultParam.setExportStatus(ExcelExportStatusEnum.FAIL);
@@ -103,7 +103,7 @@ public class ExcelServerRequestService {
         return this.updateExportHisResult(updateExportHisResultParam);
     }
 
-    public ResponseStatus updateExportSuccessResult(ExportTaskMeta taskMeta, ExportedMeta exportedMeta, FileUploadResponse uploadResponse) {
+    public ResponseVO updateExportSuccessResult(ExportTaskMeta taskMeta, ExportedMeta exportedMeta, FileUploadResponse uploadResponse) {
         UpdateExportHisResultParam updateExportHisResultParam = new UpdateExportHisResultParam();
         updateExportHisResultParam.setTaskNumber(taskMeta.getTaskNumber());
         updateExportHisResultParam.setExportStatus(ExcelExportStatusEnum.SUCCESS);
@@ -119,29 +119,29 @@ public class ExcelServerRequestService {
     /**
      * 更新导出任务
      */
-    public ResponseStatus updateExportHisResult(UpdateExportHisResultParam param) {
-        log.info("更新导出任务 param:{}", JsonUtils.toJSONString(param));
-        return this.postJson("updateExportHisResult", JsonUtils.toJSONString(param), null);
+    public ResponseVO updateExportHisResult(UpdateExportHisResultParam param) {
+        log.info("更新导出任务 param:{}", JsonUtil.toJsonString(param));
+        return this.postJson("updateExportHisResult", JsonUtil.toJsonString(param), null);
     }
 
     /**
      * 创建导入任务
      */
-    public ResponseStatus addImportHis(ImportTaskMeta taskMeta) {
+    public ResponseVO addImportHis(ImportTaskMeta taskMeta) {
         // 创建任务
         AddImportHisParam addImportHisParam = new AddImportHisParam();
         addImportHisParam.setImportType(taskMeta.getImportCode());
         addImportHisParam.setTaskNumber(taskMeta.getTaskNumber());
-        addImportHisParam.setImportParam(JsonUtils.toJSONString(taskMeta.getImportArg()));
+        addImportHisParam.setImportParam(JsonUtil.toJsonString(taskMeta.getImportArg()));
         addImportHisParam.setSyncTask(taskMeta.isSyncTask());
         addImportHisParam.setImportOrigin(this.getCurrentServerName());
         addImportHisParam.setImportOriginIp(IpUtil.getServerIp());
         addImportHisParam.setStartTime(LocalDateTime.now());
-        log.info("创建导入任务 param:{}", JsonUtils.toJSONString(addImportHisParam));
-        return this.postJson("addImportHis", JsonUtils.toJSONString(addImportHisParam), taskMeta.getAuthToken());
+        log.info("创建导入任务 param:{}", JsonUtil.toJsonString(addImportHisParam));
+        return this.postJson("addImportHis", JsonUtil.toJsonString(addImportHisParam), taskMeta.getAuthToken());
     }
 
-    public ResponseStatus updateImportErrorResult(ImportTaskMeta taskMeta, String errorMsg) {
+    public ResponseVO updateImportErrorResult(ImportTaskMeta taskMeta, String errorMsg) {
         UpdateImportHisResultParam updateImportHisResultParam = new UpdateImportHisResultParam();
         updateImportHisResultParam.setTaskNumber(taskMeta.getTaskNumber());
         updateImportHisResultParam.setFileName(taskMeta.getUploadOriginTempFile().getName());
@@ -156,7 +156,7 @@ public class ExcelServerRequestService {
         return this.updateImportHisResult(updateImportHisResultParam);
     }
 
-    public ResponseStatus updateImportSuccessResult(ImportTaskMeta taskMeta, ImportedMeta importedMeta, FileUploadResponse uploadResponse) {
+    public ResponseVO updateImportSuccessResult(ImportTaskMeta taskMeta, ImportedMeta importedMeta, FileUploadResponse uploadResponse) {
         UpdateImportHisResultParam updateImportHisResultParam = new UpdateImportHisResultParam();
         updateImportHisResultParam.setTaskNumber(taskMeta.getTaskNumber());
         updateImportHisResultParam.setFileName(taskMeta.getUploadOriginTempFile().getName());
@@ -174,9 +174,9 @@ public class ExcelServerRequestService {
     /**
      * 更新导入任务
      */
-    public ResponseStatus updateImportHisResult(UpdateImportHisResultParam param) {
-        log.info("更新导入任务 param:{}", JsonUtils.toJSONString(param));
-        return this.postJson("updateImportHisResult", JsonUtils.toJSONString(param), null);
+    public ResponseVO updateImportHisResult(UpdateImportHisResultParam param) {
+        log.info("更新导入任务 param:{}", JsonUtil.toJsonString(param));
+        return this.postJson("updateImportHisResult", JsonUtil.toJsonString(param), null);
     }
 
 }

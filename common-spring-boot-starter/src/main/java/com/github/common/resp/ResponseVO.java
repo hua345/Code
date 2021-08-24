@@ -1,6 +1,7 @@
 package com.github.common.resp;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.common.util.I18nMessageUtil;
 import lombok.Getter;
@@ -47,6 +48,7 @@ public class ResponseVO<T> implements Serializable {
         this.data = data;
     }
 
+    @JsonIgnore
     public boolean isSuccess() {
         if (ResponseStatusEnum.SUCCESS.getErrorCode().equals(this.code)) {
             return true;
@@ -54,6 +56,7 @@ public class ResponseVO<T> implements Serializable {
         return false;
     }
 
+    @JsonIgnore
     public boolean isSuccessDataNotNull() {
         if (ResponseStatusEnum.SUCCESS.getErrorCode().equals(this.code)
                 && null != this.data) {

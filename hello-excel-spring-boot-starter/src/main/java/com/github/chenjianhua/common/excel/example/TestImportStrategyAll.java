@@ -18,12 +18,12 @@ import java.util.List;
 @Slf4j
 @Component
 @ImportStrategy(strategyCode = "test_import")
-public class TestImportStrategyAll extends AbstractExcelImportAll<UploadDataModel> {
+public class TestImportStrategyAll extends AbstractExcelImportAll<TestModel> {
     /**
      * @param rowData 解析后的单行数据
      */
     @Override
-    public void rowDataCheck(UploadDataModel rowData) {
+    public void rowDataCheck(TestModel rowData) {
         log.info(JsonUtil.toJsonString(rowData));
     }
 
@@ -31,12 +31,12 @@ public class TestImportStrategyAll extends AbstractExcelImportAll<UploadDataMode
      * @param rowData 检查成功后返回的所有数据
      */
     @Override
-    public void importedAllRowHandle(List<UploadDataModel> rowData) {
+    public void importedAllRowHandle(List<TestModel> rowData) {
         log.info("读取的数据行数:{}", rowData.size());
     }
 
     public static void main(String[] args) throws IOException {
-        String fileName = "/Users/chenjianhua/Desktop" + File.separator + "商品交易明细报表1275169920506234600.xlsx";
+        String fileName = "C:\\Users\\chenjh91\\Desktop" + File.separator + "test.xlsx";
         File file = new File(fileName);
         TestImportStrategyAll testImportStrategy = new TestImportStrategyAll();
         ImportTaskMeta importTaskMeta = new ImportTaskMeta();

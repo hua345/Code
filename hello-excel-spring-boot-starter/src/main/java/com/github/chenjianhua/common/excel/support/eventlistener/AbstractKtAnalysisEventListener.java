@@ -34,6 +34,15 @@ public abstract class AbstractKtAnalysisEventListener<T> extends AnalysisEventLi
      * 读取的数据列表
      */
     protected final List<T> allReadRows = new LinkedList<>();
+
+    /**
+     * 检查所有数据后是否返回所有数据
+     */
+    protected Boolean readAllRows = false;
+    /**
+     * 开始读取的行,excel文件的行号
+     */
+    protected Integer beginReadRow = null;
     /**
      *
      */

@@ -5,7 +5,7 @@ import com.github.chenjianhua.common.excel.bo.ept.ExportedMeta;
 import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
 import com.github.chenjianhua.common.excel.enums.ExcelConstants;
 import com.github.chenjianhua.common.excel.bo.FileUploadResponse;
-import com.github.chenjianhua.common.excel.support.UploadHandler;
+import com.github.chenjianhua.common.excel.file.FileUploadService;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.common.config.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -61,10 +61,18 @@ public class ExcelUploadUtil {
 
     public static FileUploadResponse uploadExport(ExportedMeta exportedMeta) {
         File exportFile = exportedMeta.getExportFileMeta().getExportFile();
-        return UploadHandler.upload("excel-export/" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "/", exportFile.getName(), exportFile);
+        FileUploadService fileUploadService = ApplicationContextUtil.getBean(FileUploadService.class);
+        StringBuilder sb = new StringBuilder();
+        sb.append("excel-export").append(File.separator)
+                .append(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        return fileUploadService.uploadFile(sb.toString(), exportFile.getName(), exportFile);
     }
 
     public static FileUploadResponse uploadImport(File file) throws IOException {
-        return UploadHandler.upload("excel-import/" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "/", file.getName(), file);
+        FileUploadService fileUploadService = ApplicationContextUtil.getBean(FileUploadService.class);
+        StringBuilder sb = new StringBuilder();
+        sb.append("excel-import").append(File.separator)
+                .append(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        return fileUploadService.uploadFile(sb.toString(), file.getName(), file);
     }
 }

@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotEmpty;
+
 /**
  * @author chenjianhua
  * @date 2021/3/22
@@ -24,10 +26,6 @@ public class ExportTaskMeta {
      * 导出参数
      */
     private Object exportArg;
-    /**
-     * 当前导出数据参数（用到的时候需要强制类型转换），第一次导出为空
-     */
-    private Object currentExportAttr;
     /**
      * 是否同步任务
      */

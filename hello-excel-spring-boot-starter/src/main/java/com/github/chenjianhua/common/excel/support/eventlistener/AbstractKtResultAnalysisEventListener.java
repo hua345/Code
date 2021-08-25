@@ -7,6 +7,7 @@ import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.github.chenjianhua.common.excel.enums.ExcelConstants;
 import com.github.chenjianhua.common.excel.util.ExcelStyleUtil;
 import com.github.chenjianhua.common.excel.example.UploadDataModel;
+import com.github.chenjianhua.common.excel.util.ExportReflectUtil;
 import com.github.chenjianhua.common.excel.util.UuidUtil;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.common.config.exception.BusinessException;
@@ -38,6 +39,19 @@ public abstract class AbstractKtResultAnalysisEventListener<T> extends AbstractK
     private CellStyle successStyle;
     private CellStyle errorStyle;
 
+    public AbstractKtResultAnalysisEventListener() {
+
+    }
+
+    public AbstractKtResultAnalysisEventListener(Boolean readAllRows) {
+        this.readAllRows = readAllRows;
+    }
+
+    public AbstractKtResultAnalysisEventListener(Boolean readAllRows, Integer beginReadRow) {
+        this.readAllRows = readAllRows;
+        this.beginReadRow = beginReadRow;
+    }
+
     /**
      * 这里会一行行的返回头
      *
@@ -58,8 +72,8 @@ public abstract class AbstractKtResultAnalysisEventListener<T> extends AbstractK
             throw new BusinessException("文件格式错误");
         }
 
-        this.sheet = workbook.getSheetAt(0);
-        Row row = this.sheet.getRow(0);
+        this.sheet = workbook.getSheetAt(context.readSheetHolder().getSheetNo());
+        Row row = this.sheet.getRow(context.readRowHolder().getRowIndex());
         this.lastCellNum = row.getLastCellNum();
         // 创建头部结果Cell
         Cell headCell = row.createCell(this.lastCellNum + 1);
@@ -91,11 +105,18 @@ public abstract class AbstractKtResultAnalysisEventListener<T> extends AbstractK
     @Override
     public void invoke(T rowData, AnalysisContext context) {
         Integer rowNum = context.readRowHolder().getRowIndex();
+        if (null != beginReadRow && rowNum + 1 < beginReadRow) {
+            log.info("忽略当前行:{} rowData:{}", rowNum + 1, JsonUtil.toJsonString(rowData));
+            return;
+        }
         try {
             // 导入Model springboot校验注解检查
             this.checkBindingResult(rowData);
             // 检查成功，处理数据
             processData(rowData, context);
+            if (this.readAllRows) {
+                this.allReadRows.add(rowData);
+            }
             successRecord++;
             setResult(rowNum, ExcelConstants.SUCCESS_MSG, null, this.successStyle);
         } catch (BusinessException e) {

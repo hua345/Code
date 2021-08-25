@@ -42,17 +42,17 @@ public abstract class AbstractKtWriteFileAnalysisEventListener<T> extends Abstra
     private ExcelWriter excelWriter;
     private WriteSheet writeSheet;
 
-    /**
-     * 检查所有数据后是否返回所有数据
-     */
-    private Boolean readAllRows = false;
-
     public AbstractKtWriteFileAnalysisEventListener() {
 
     }
 
     public AbstractKtWriteFileAnalysisEventListener(Boolean readAllRows) {
         this.readAllRows = readAllRows;
+    }
+
+    public AbstractKtWriteFileAnalysisEventListener(Boolean readAllRows, Integer beginReadRow) {
+        this.readAllRows = readAllRows;
+        this.beginReadRow = beginReadRow;
     }
 
     /**
@@ -85,11 +85,26 @@ public abstract class AbstractKtWriteFileAnalysisEventListener<T> extends Abstra
                 .build();
     }
 
+    private boolean checkBeginData(T rowData, AnalysisContext context) {
+        Integer rowNum = context.readRowHolder().getRowIndex() + 1;
+        if (null != beginReadRow && rowNum < beginReadRow) {
+            log.info("忽略当前行:{} rowData:{}", rowNum, JsonUtil.toJsonString(rowData));
+            // 动态写入结果文件
+            List<Object> rowCellList = ExportReflectUtil.getClassFieldValue(rowData);
+            excelWriter.write(Collections.singletonList(rowCellList), writeSheet);
+            return true;
+        }
+        return false;
+    }
+
     /**
      * 这个每一条数据解析都会来调用
      */
     @Override
     public void invoke(T rowData, AnalysisContext context) {
+        if (checkBeginData(rowData, context)) {
+            return;
+        }
         String resultMsg = "";
         try {
             // 导入Model springboot校验注解检查

@@ -1,5 +1,6 @@
 package com.github.chenjianhua.common.excel.config;
 
+import com.github.chenjianhua.common.excel.enums.UploadFileEnum;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -29,4 +30,8 @@ public class ExcelAutoProperties {
     private String exportServerName = "export-server";
 
     private Boolean closeExcelLog = false;
+
+    private UploadFileEnum uploadFileEnum = UploadFileEnum.LOCAL_FILE;
+
+    private String localPath = "D:\\localFile";
 }

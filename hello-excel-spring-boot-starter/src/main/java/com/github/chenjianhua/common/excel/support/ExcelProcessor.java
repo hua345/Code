@@ -3,8 +3,8 @@ package com.github.chenjianhua.common.excel.support;
 import com.github.chenjianhua.common.excel.bo.FileUploadResponse;
 import com.github.chenjianhua.common.excel.bo.ept.ExportTaskMeta;
 import com.github.chenjianhua.common.excel.bo.ept.ExportedMeta;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportedMeta;
+import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
+import com.github.chenjianhua.common.excel.bo.ipt.ImportResultVo;
 import com.github.chenjianhua.common.excel.enums.ExcelConstants;
 import com.github.chenjianhua.common.excel.enums.ExcelExportStatusEnum;
 import com.github.chenjianhua.common.excel.service.ExcelServerRequestService;
@@ -37,56 +37,60 @@ public class ExcelProcessor {
      *
      * @return 返回经过文件路径
      */
-    public static ResponseVO<ImportCallback> importExcel(ImportTaskMeta taskMeta) {
+    public static ResponseVO<ImportCallback> importExcel(ImportTaskParam importTaskParam) {
         ImportCallback importCallback = new ImportCallback();
-        importCallback.setTaskNumber(taskMeta.getTaskNumber());
-        ExcelImportStrategy strategy = ExcelStrategySelector.getImportStrategy(taskMeta.getImportCode());
+        importCallback.setTaskNumber(importTaskParam.getTaskNumber());
+        ExcelImportStrategy strategy = ExcelStrategySelector.getImportStrategy(importTaskParam.getImportCode());
         // 更新导入任务状态
         ExcelServerRequestService excelServerRequestService = ApplicationContextUtil.getBean(ExcelServerRequestService.class);
         UpdateImportHisResultParam updateImportHisResultParam = new UpdateImportHisResultParam();
-        updateImportHisResultParam.setTaskNumber(taskMeta.getTaskNumber());
+        updateImportHisResultParam.setTaskNumber(importTaskParam.getTaskNumber());
         updateImportHisResultParam.setImportStatus(ExcelExportStatusEnum.DOING);
         updateImportHisResultParam.setResultMsg(ExcelExportStatusEnum.DOING.getDescription());
-        updateImportHisResultParam.setFileName(taskMeta.getUploadOriginTempFile().getName());
-        ImportedMeta importedMeta = null;
+        updateImportHisResultParam.setFileName(importTaskParam.getUploadOriginTempFile().getName());
+        ImportResultVo importResultVo = null;
         try {
-            importedMeta = strategy.doImport(taskMeta);
-            log.info("[{}]导入结果{}", taskMeta.getTaskNumber(), JsonUtil.toJsonString(importedMeta));
+            importResultVo = strategy.doImport(importTaskParam);
+            log.info("[{}]导入结果{}", importTaskParam.getTaskNumber(), JsonUtil.toJsonString(importResultVo));
             FileUploadResponse uploadResponse = null;
-            if (Objects.nonNull(importedMeta)) {
-                uploadResponse = ExcelUploadUtil.uploadImport(importedMeta.getResultTempFile());
-                log.info("[{}]上传结果{}", taskMeta.getTaskNumber(), JsonUtil.toJsonString(uploadResponse));
+            if (Objects.nonNull(importResultVo)) {
+                uploadResponse = ExcelUploadUtil.uploadImport(importResultVo.getResultTempFile());
+                log.info("[{}]上传结果{}", importTaskParam.getTaskNumber(), JsonUtil.toJsonString(uploadResponse));
             }
             // 检查导出文件上传状态
             if (null == uploadResponse || ExcelConstants.RESP_SUCCESS_STATUS != uploadResponse.getCode()) {
                 throw new BusinessException("上传导入结果文件异常");
             }
             importCallback.setFileName(updateImportHisResultParam.getFileName());
-            importCallback.setTotalRecord(importedMeta.getTotalRecord());
-            importCallback.setSuccessRecord(importedMeta.getSuccessRecord());
-            importCallback.setFailedRecord(importedMeta.getFailedRecord());
-            importCallback.setOriginOssFilePath(taskMeta.getImportOssFilePath());
+            importCallback.setTotalRecord(importResultVo.getTotalRecord());
+            importCallback.setSuccessRecord(importResultVo.getSuccessRecord());
+            importCallback.setFailedRecord(importResultVo.getFailedRecord());
+            importCallback.setOriginOssFilePath(importTaskParam.getImportOssFilePath());
             importCallback.setResultOssFilePath(uploadResponse.getUrl());
             importCallback.setImportStatus(ExcelExportStatusEnum.SUCCESS);
             // 导出成功更新导出结果
-            excelServerRequestService.updateImportSuccessResult(taskMeta, importedMeta, uploadResponse);
-            log.info("[{}]导入任务完成", taskMeta.getTaskNumber());
+            excelServerRequestService.updateImportSuccessResult(importTaskParam, importResultVo, uploadResponse);
+            log.info("[{}]导入任务完成", importTaskParam.getTaskNumber());
         } catch (BusinessException e) {
-            excelServerRequestService.updateImportErrorResult(taskMeta, e.getMessage());
-            log.error("[{}]导入失败", taskMeta.getTaskNumber(), e);
+            excelServerRequestService.updateImportErrorResult(importTaskParam, e.getMessage());
+            log.error("[{}]导入失败", importTaskParam.getTaskNumber(), e);
             return ResponseVO.fail("导出任务处理失败," + e.getMessage(), importCallback);
         } catch (Exception e) {
-            excelServerRequestService.updateImportErrorResult(taskMeta, null);
-            log.error("[{}]导入失败", taskMeta.getTaskNumber(), e);
+            excelServerRequestService.updateImportErrorResult(importTaskParam, null);
+            log.error("[{}]导入失败", importTaskParam.getTaskNumber(), e);
             return ResponseVO.fail("导入任务处理失败", importCallback);
         } finally {
+            boolean uploadDelete = false, resultDelete = false;
             // 删除temp文件
-            if (null != taskMeta.getUploadOriginTempFile()) {
-                taskMeta.getUploadOriginTempFile().delete();
+            if (null != importTaskParam.getUploadOriginTempFile() &&
+                    importTaskParam.getUploadOriginTempFile().exists()) {
+                uploadDelete = importTaskParam.getUploadOriginTempFile().delete();
             }
-            if (null != importedMeta && null != importedMeta.getResultTempFile()) {
-                importedMeta.getResultTempFile().delete();
+            if (null != importResultVo && null != importResultVo.getResultTempFile()
+                    && importResultVo.getResultTempFile().exists()) {
+                resultDelete = importResultVo.getResultTempFile().delete();
             }
+            log.info("删除temp文件uploadDelete:{},resultDelete:{}", uploadDelete, resultDelete);
         }
 
         return ResponseVO.ok(importCallback);

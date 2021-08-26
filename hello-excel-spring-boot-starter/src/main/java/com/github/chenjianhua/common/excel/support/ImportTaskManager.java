@@ -1,6 +1,6 @@
 package com.github.chenjianhua.common.excel.support;
 
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
+import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
 import com.github.chenjianhua.common.excel.enums.ExcelExportStatusEnum;
 import com.github.chenjianhua.common.excel.service.ExcelServerRequestService;
 import com.github.chenjianhua.common.excel.support.ipt.ExcelImportStrategy;
@@ -35,19 +35,19 @@ public class ImportTaskManager implements ApplicationRunner {
      */
     private static Semaphore semaphore = new Semaphore(10);
 
-    private static ImportCallback checkExcelImportParam(ImportTaskMeta taskMeta) {
-        if (!StringUtils.hasText(taskMeta.getImportCode())) {
+    private static ImportCallback checkExcelImportParam(ImportTaskParam importTaskParam) {
+        if (!StringUtils.hasText(importTaskParam.getImportCode())) {
             throw new BusinessException("导入类型为空!");
         }
-        ExcelImportStrategy strategy = ExcelStrategySelector.getImportStrategy(taskMeta.getImportCode());
+        ExcelImportStrategy strategy = ExcelStrategySelector.getImportStrategy(importTaskParam.getImportCode());
         if (null == strategy) {
             StringBuilder sb = new StringBuilder();
-            sb.append("导入任务类型:").append(taskMeta.getImportCode()).append("没有执行策略");
+            sb.append("导入任务类型:").append(importTaskParam.getImportCode()).append("没有执行策略");
             throw new BusinessException(sb.toString());
         }
         ExcelServerRequestService excelServerRequestService = ApplicationContextUtil.getBean(ExcelServerRequestService.class);
         // 创建导出任务
-        ResponseVO responseStatus = excelServerRequestService.addImportHis(taskMeta);
+        ResponseVO responseStatus = excelServerRequestService.addImportHis(importTaskParam);
         if (!responseStatus.isSuccess()) {
             log.info("创建导入记录失败 :{}", JsonUtil.toJsonString(responseStatus));
             throw new BusinessException("创建导入记录失败");
@@ -55,11 +55,11 @@ public class ImportTaskManager implements ApplicationRunner {
         return null;
     }
 
-    public static ResponseVO<ImportCallback> excelImport(ImportTaskMeta taskMeta) {
-        taskMeta.setTaskNumber(UuidUtil.getUuid32());
+    public static ResponseVO<ImportCallback> excelImport(ImportTaskParam importTaskParam) {
+        importTaskParam.setTaskNumber(UuidUtil.getUuid32());
         ExcelServerRequestService excelServerRequestService = ApplicationContextUtil.getBean(ExcelServerRequestService.class);
         try {
-            checkExcelImportParam(taskMeta);
+            checkExcelImportParam(importTaskParam);
         } catch (BusinessException e) {
             log.info(e.getMessage());
             return ResponseVO.fail(e.getMessage());
@@ -67,26 +67,26 @@ public class ImportTaskManager implements ApplicationRunner {
         ImportCallback importCallback = new ImportCallback();
         try {
             // 上传的导入文件保存到本地temp文件和上传到oss
-            ExcelUploadUtil.handleUploadFile(taskMeta);
+            ExcelUploadUtil.handleUploadFile(importTaskParam);
             importCallback = new ImportCallback();
-            importCallback.setTaskNumber(taskMeta.getTaskNumber());
+            importCallback.setTaskNumber(importTaskParam.getTaskNumber());
             semaphore.acquire();
             // 如果是异步导出任务或者当前正在执行的导出任务达到最大值
-            if (!taskMeta.isSyncTask()) {
+            if (!importTaskParam.isSyncTask()) {
                 // 异步执行，不返回文件路径
-                importExcelCompletionService.submit(() -> ExcelProcessor.importExcel(taskMeta));
+                importExcelCompletionService.submit(() -> ExcelProcessor.importExcel(importTaskParam));
                 return ResponseVO.ok(importCallback);
             } else {
-                return ExcelProcessor.importExcel(taskMeta);
+                return ExcelProcessor.importExcel(importTaskParam);
             }
         } catch (Exception e) {
-            log.error("[{}]导出失败", taskMeta.getTaskNumber(), e);
-            excelServerRequestService.updateImportErrorResult(taskMeta, "上传文件异常");
+            log.error("[{}]导出失败", importTaskParam.getTaskNumber(), e);
+            excelServerRequestService.updateImportErrorResult(importTaskParam, "上传文件异常");
             importCallback.setImportStatus(ExcelExportStatusEnum.FAIL);
             return ResponseVO.fail("导入失败!", importCallback);
         } finally {
             // 只释放同步任务信号量，异步任务在异步完成时释放
-            if (taskMeta.isSyncTask()) {
+            if (importTaskParam.isSyncTask()) {
                 semaphore.release();
             }
         }

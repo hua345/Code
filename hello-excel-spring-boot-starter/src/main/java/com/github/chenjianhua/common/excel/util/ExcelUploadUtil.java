@@ -2,7 +2,7 @@ package com.github.chenjianhua.common.excel.util;
 
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.github.chenjianhua.common.excel.bo.ept.ExportedMeta;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
+import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
 import com.github.chenjianhua.common.excel.enums.ExcelConstants;
 import com.github.chenjianhua.common.excel.bo.FileUploadResponse;
 import com.github.chenjianhua.common.excel.file.FileUploadService;
@@ -28,7 +28,7 @@ public class ExcelUploadUtil {
     /**
      * 上传的导入文件保存到本地temp文件和上传到oss
      */
-    public static void handleUploadFile(ImportTaskMeta taskMeta) throws IOException {
+    public static void handleUploadFile(ImportTaskParam taskMeta) throws IOException {
         // 将上传的文件流保存到本地
         File uploadOriginFile = ExcelUploadUtil.uploadFileToTempFile(taskMeta.getFile());
         // 上传导入原始文件到oss

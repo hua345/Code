@@ -1,6 +1,6 @@
 package com.github.chenjianhua.common.excel.controller;
 
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
+import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
 import com.github.chenjianhua.common.excel.support.ImportTaskManager;
 import com.github.chenjianhua.common.excel.vo.ImportCallback;
 import com.github.chenjianhua.common.json.util.JsonUtil;
@@ -8,7 +8,6 @@ import com.github.common.config.exception.BusinessException;
 import com.github.common.resp.ResponseVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,11 +35,11 @@ public class ImportExcelController {
                                                   HttpServletRequest request) {
 
         checkExcel(file);
-        ImportTaskMeta importTaskMeta = buildImportTaskMeta(request, authToken);
-        log.info("asyncImport收到导入请求:{}", JsonUtil.toJsonString(importTaskMeta));
-        importTaskMeta.setSyncTask(false);
-        importTaskMeta.setFile(file);
-        ResponseVO<ImportCallback> importResp = ImportTaskManager.excelImport(importTaskMeta);
+        ImportTaskParam importTaskParam = buildImportTaskMeta(request, authToken);
+        log.info("asyncImport收到导入请求:{}", JsonUtil.toJsonString(importTaskParam));
+        importTaskParam.setSyncTask(false);
+        importTaskParam.setFile(file);
+        ResponseVO<ImportCallback> importResp = ImportTaskManager.excelImport(importTaskParam);
         log.info("导入结果:{}", JsonUtil.toJsonString(importResp));
         return importResp;
     }
@@ -51,11 +50,11 @@ public class ImportExcelController {
                                                  @RequestParam("file") MultipartFile file,
                                                  HttpServletRequest request) {
         checkExcel(file);
-        ImportTaskMeta importTaskMeta = buildImportTaskMeta(request, authToken);
-        log.info("asyncImport收到导入请求:{}", JsonUtil.toJsonString(importTaskMeta));
-        importTaskMeta.setSyncTask(true);
-        importTaskMeta.setFile(file);
-        ResponseVO<ImportCallback> importResp = ImportTaskManager.excelImport(importTaskMeta);
+        ImportTaskParam importTaskParam = buildImportTaskMeta(request, authToken);
+        log.info("asyncImport收到导入请求:{}", JsonUtil.toJsonString(importTaskParam));
+        importTaskParam.setSyncTask(true);
+        importTaskParam.setFile(file);
+        ResponseVO<ImportCallback> importResp = ImportTaskManager.excelImport(importTaskParam);
         log.info("导入结果:{}", JsonUtil.toJsonString(importResp));
         return importResp;
     }
@@ -72,14 +71,14 @@ public class ImportExcelController {
         }
     }
 
-    private ImportTaskMeta buildImportTaskMeta(HttpServletRequest request, String authToken) {
+    private ImportTaskParam buildImportTaskMeta(HttpServletRequest request, String authToken) {
         String importType = request.getParameter(IMPORT_TYPE);
         if (!StringUtils.hasText(importType)) {
             throw new BusinessException("importType导入类型不能为空");
         }
         Map<String, String[]> paramMap = request.getParameterMap();
-        ImportTaskMeta importTaskMeta = new ImportTaskMeta();
-        importTaskMeta.setImportCode(importType);
+        ImportTaskParam importTaskParam = new ImportTaskParam();
+        importTaskParam.setImportCode(importType);
         // 导入参数
         Map<String, Object> importArgs = new HashMap<>(8);
         paramMap.entrySet().forEach(item -> {
@@ -87,8 +86,8 @@ public class ImportExcelController {
                 importArgs.put(item.getKey(), item.getValue()[0]);
             }
         });
-        importTaskMeta.setImportArg(importArgs);
-        importTaskMeta.setAuthToken(authToken);
-        return importTaskMeta;
+        importTaskParam.setImportArg(importArgs);
+        importTaskParam.setAuthToken(authToken);
+        return importTaskParam;
     }
 }

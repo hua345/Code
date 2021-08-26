@@ -2,8 +2,8 @@ package com.github.chenjianhua.common.excel.service;
 
 import com.github.chenjianhua.common.excel.bo.ept.ExportTaskMeta;
 import com.github.chenjianhua.common.excel.bo.ept.ExportedMeta;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskMeta;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportedMeta;
+import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
+import com.github.chenjianhua.common.excel.bo.ipt.ImportResultVo;
 import com.github.chenjianhua.common.excel.config.ExcelAutoProperties;
 import com.github.chenjianhua.common.excel.enums.ExcelExportStatusEnum;
 import com.github.chenjianhua.common.excel.vo.AddImportHisParam;
@@ -127,7 +127,7 @@ public class ExcelServerRequestService {
     /**
      * 创建导入任务
      */
-    public ResponseVO addImportHis(ImportTaskMeta taskMeta) {
+    public ResponseVO addImportHis(ImportTaskParam taskMeta) {
         // 创建任务
         AddImportHisParam addImportHisParam = new AddImportHisParam();
         addImportHisParam.setImportType(taskMeta.getImportCode());
@@ -141,7 +141,7 @@ public class ExcelServerRequestService {
         return this.postJson("addImportHis", JsonUtil.toJsonString(addImportHisParam), taskMeta.getAuthToken());
     }
 
-    public ResponseVO updateImportErrorResult(ImportTaskMeta taskMeta, String errorMsg) {
+    public ResponseVO updateImportErrorResult(ImportTaskParam taskMeta, String errorMsg) {
         UpdateImportHisResultParam updateImportHisResultParam = new UpdateImportHisResultParam();
         updateImportHisResultParam.setTaskNumber(taskMeta.getTaskNumber());
         updateImportHisResultParam.setFileName(taskMeta.getUploadOriginTempFile().getName());
@@ -156,15 +156,15 @@ public class ExcelServerRequestService {
         return this.updateImportHisResult(updateImportHisResultParam);
     }
 
-    public ResponseVO updateImportSuccessResult(ImportTaskMeta taskMeta, ImportedMeta importedMeta, FileUploadResponse uploadResponse) {
+    public ResponseVO updateImportSuccessResult(ImportTaskParam taskMeta, ImportResultVo importResultVo, FileUploadResponse uploadResponse) {
         UpdateImportHisResultParam updateImportHisResultParam = new UpdateImportHisResultParam();
         updateImportHisResultParam.setTaskNumber(taskMeta.getTaskNumber());
         updateImportHisResultParam.setFileName(taskMeta.getUploadOriginTempFile().getName());
         updateImportHisResultParam.setImportStatus(ExcelExportStatusEnum.SUCCESS);
         updateImportHisResultParam.setResultMsg(ExcelExportStatusEnum.SUCCESS.getDescription());
-        updateImportHisResultParam.setTotalRecord(importedMeta.getTotalRecord());
-        updateImportHisResultParam.setSuccessRecord(importedMeta.getSuccessRecord());
-        updateImportHisResultParam.setFailedRecord(importedMeta.getFailedRecord());
+        updateImportHisResultParam.setTotalRecord(importResultVo.getTotalRecord());
+        updateImportHisResultParam.setSuccessRecord(importResultVo.getSuccessRecord());
+        updateImportHisResultParam.setFailedRecord(importResultVo.getFailedRecord());
         updateImportHisResultParam.setEndTime(LocalDateTime.now());
         updateImportHisResultParam.setImportFilePath(taskMeta.getImportOssFilePath());
         updateImportHisResultParam.setResultFilePath(uploadResponse.getUrl());

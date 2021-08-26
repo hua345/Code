@@ -46,7 +46,7 @@ public class OssFileUploadServiceImpl implements FileUploadService {
         return upload(prefixFolder, fileName, null, file);
     }
 
-    private static FileUploadResponse upload(String prefixFolder, String fileName, InputStream fileStream, File file) {
+    private static FileUploadResponse upload(String prefixFolder, String fileName, InputStream  fileStream, File file) {
         if(!StringUtils.hasText(prefixFolder)){
             prefixFolder = "resource/";
         }

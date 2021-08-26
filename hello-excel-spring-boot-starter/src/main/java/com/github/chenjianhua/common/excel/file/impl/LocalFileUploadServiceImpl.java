@@ -30,10 +30,10 @@ public class LocalFileUploadServiceImpl implements FileUploadService {
     /**
      * @param prefixFolder 上传目录（可为空）
      * @param fileName     文件名
-     * @param fileStream   上传文件输入流
+     * @param inStream   上传文件输入流
      */
     @Override
-    public FileUploadResponse uploadFile(String prefixFolder, String fileName, InputStream fileStream) {
+    public FileUploadResponse uploadFile(String prefixFolder, String fileName, InputStream inStream) {
         FileUploadResponse fileUploadResponse = new FileUploadResponse();
         OutputStream os = null;
         try {
@@ -50,7 +50,7 @@ public class LocalFileUploadServiceImpl implements FileUploadService {
             fileUploadResponse.setUrl(prefixFolder + File.separator + fileName);
             os = new FileOutputStream(filePath + File.separator + fileName);
             // 开始读取
-            while ((len = fileStream.read(bs)) != -1) {
+            while ((len = inStream.read(bs)) != -1) {
                 os.write(bs, 0, len);
             }
         } catch (Exception e) {
@@ -59,6 +59,7 @@ public class LocalFileUploadServiceImpl implements FileUploadService {
         } finally {
             // 完毕，关闭所有链接
             try {
+                inStream.close();
                 os.flush();
                 os.close();
             } catch (IOException e) {

@@ -1,9 +1,15 @@
-package com.github.chenjianhua.common.excel.example;
+package com.github.chenjianhua.excel.excel;
 
+import com.github.chenjianhua.common.excel.annotation.ExportStrategy;
 import com.github.chenjianhua.common.excel.entity.BeginAndEndTimeBo;
 import com.github.chenjianhua.common.excel.entity.exportexcel.ExportTaskParam;
 import com.github.chenjianhua.common.excel.support.ept.AbstractComplexExcelExport;
 import com.github.chenjianhua.common.excel.util.ExcelSplitUtil;
+import com.github.chenjianhua.excel.model.TestExportModel;
+import com.github.chenjianhua.excel.model.TestModel;
+import com.github.chenjianhua.excel.model.TestMultiExportModel;
+import com.github.chenjianhua.excel.model.param.TestExportParam;
+import com.github.chenjianhua.excel.service.TestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -19,12 +25,13 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class TestCurrentStrategy extends AbstractComplexExcelExport<TestCurrentModel, TestExportParam> {
+@ExportStrategy(strategyCode = "TestMultiExport")
+public class TestMultiExportStrategy extends AbstractComplexExcelExport<TestMultiExportModel, TestExportParam> {
 
     @Resource
     private TestService testService;
 
-    public TestCurrentStrategy() {
+    public TestMultiExportStrategy() {
         this.setSheetName("大数据导出测试");
         this.setFileName("大数据导出测试");
     }
@@ -55,13 +62,13 @@ public class TestCurrentStrategy extends AbstractComplexExcelExport<TestCurrentM
      * 查询导出数据
      */
     @Override
-    protected List<TestCurrentModel> findExportData(TestExportParam param) {
+    protected List<TestMultiExportModel> findExportData(TestExportParam param) {
         List<TestModel> list = testService.findTestData(param);
         if (list == null) {
             list = Collections.emptyList();
         }
-        List<TestCurrentModel> rows = list.stream().map(item -> {
-            TestCurrentModel model = new TestCurrentModel();
+        List<TestMultiExportModel> rows = list.stream().map(item -> {
+            TestMultiExportModel model = new TestMultiExportModel();
             BeanUtils.copyProperties(item, model);
             return model;
         }).collect(Collectors.toList());

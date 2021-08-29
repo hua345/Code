@@ -75,7 +75,6 @@ public abstract class AbstractExcelExport<T, P> extends ExportTemplate<T, P> {
             exportFileBo.setTotalRecord((long) modelData.size());
             excelWriter.finish();
         } finally {
-            exportFileBo.setExportTimes(1);
             exportFileBo.setExportFile(tempFile);
             exportFileBo.setFileSize(tempFile.length());
         }

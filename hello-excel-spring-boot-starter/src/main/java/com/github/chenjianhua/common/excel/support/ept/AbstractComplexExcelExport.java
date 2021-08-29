@@ -98,7 +98,6 @@ public abstract class AbstractComplexExcelExport<T, P> extends ExportTemplate<T,
                 // 写入数据
                 writeSheetData(excelWriter, exportMeta, rows, currentSheet);
             }
-            exportFileBo.setExportTimes(params.size());
             excelWriter.finish();
         } finally {
             exportFileBo.setExportFile(tempFile);

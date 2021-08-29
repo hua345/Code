@@ -26,8 +26,4 @@ public class ExportFileBo {
      * 总记录数
      */
     private Long totalRecord;
-    /**
-     * 导出次数
-     */
-    private Integer exportTimes;
 }

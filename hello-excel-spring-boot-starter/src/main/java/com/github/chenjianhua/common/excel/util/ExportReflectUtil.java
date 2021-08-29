@@ -1,7 +1,6 @@
 package com.github.chenjianhua.common.excel.util;
 
 import com.github.chenjianhua.common.excel.entity.TableFieldInfoBo;
-import com.github.chenjianhua.common.excel.example.UploadDataModel;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,9 +45,9 @@ public class ExportReflectUtil {
     }
 
     public static void main(String[] args) {
-        UploadDataModel uploadDataModel = new UploadDataModel();
-        uploadDataModel.setNodeCode("123456");
-        uploadDataModel.setCustomerName("陈建华");
-        log.info(JsonUtil.toJsonString(ExportReflectUtil.getClassFieldValue(uploadDataModel)));
+        TableFieldInfoBo tableFieldInfoBo = new TableFieldInfoBo();
+        tableFieldInfoBo.setFieldCode("name");
+        tableFieldInfoBo.setFieldName("陈建华");
+        log.info(JsonUtil.toJsonString(ExportReflectUtil.getClassFieldValue(tableFieldInfoBo)));
     }
 }

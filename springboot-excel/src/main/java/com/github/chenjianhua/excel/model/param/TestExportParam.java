@@ -1,4 +1,4 @@
-package com.github.chenjianhua.common.excel.example;
+package com.github.chenjianhua.excel.model.param;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.chenjianhua.common.excel.entity.TableFieldInfoBo;

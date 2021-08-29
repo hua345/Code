@@ -24,9 +24,9 @@ public class ExcelSplitUtil {
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-    public static final Integer MIN_UNIT_NUM = 3000;
+    public static final Integer MIN_UNIT_NUM = 1000;
 
-    public static final Integer DEFAULT_PAGE_SIZE = 3000;
+    public static final Integer DEFAULT_PAGE_SIZE = 1000;
 
     public static final BigDecimal MIN_UNIT_BIG_DECIMAL = BigDecimal.valueOf(MIN_UNIT_NUM);
 

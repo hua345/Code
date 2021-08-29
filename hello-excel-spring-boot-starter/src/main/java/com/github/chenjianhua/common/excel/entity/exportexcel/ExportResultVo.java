@@ -15,7 +15,16 @@ public class ExportResultVo {
      */
     private String taskNumber;
 
+    /**
+     * 导出文件名
+     */
     private String fileName;
+    /**
+     * 导出文件行数
+     */
     private Long rowsSize;
+    /**
+     * 文件路径
+     */
     private String filePath;
 }

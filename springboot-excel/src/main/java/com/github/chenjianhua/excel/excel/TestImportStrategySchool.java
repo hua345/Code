@@ -3,7 +3,7 @@ package com.github.chenjianhua.excel.excel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.metadata.Cell;
 import com.github.chenjianhua.common.excel.annotation.ImportStrategy;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportDataBo;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportDataBo;
 import com.github.chenjianhua.common.excel.support.eventlistener.AbstractModelAnalysisEventListener;
 import com.github.chenjianhua.common.excel.support.eventlistener.AbstractModelWriteFileAnalysisEventListener;
 import com.github.chenjianhua.common.excel.support.template.AbstractImportRowTemplate;

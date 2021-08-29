@@ -1,10 +1,10 @@
 package com.github.chenjianhua.excel.excel;
 
 import com.github.chenjianhua.common.excel.annotation.ExportStrategy;
-import com.github.chenjianhua.common.excel.bo.ept.ExportTaskMeta;
-import com.github.chenjianhua.common.excel.example.TestExportParam;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportTaskParam;
 import com.github.chenjianhua.common.excel.support.ept.AbstractExcelExport;
 import com.github.chenjianhua.excel.model.TestExportModel;
+import com.github.chenjianhua.excel.model.param.TestExportParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +29,7 @@ public class TestExportStrategy extends AbstractExcelExport<TestExportModel, Tes
      * 初始化数据,比如异步情况下通过token获取用户信息
      */
     @Override
-    public void initExportData(ExportTaskMeta meta) {
+    public void initExportData(ExportTaskParam meta) {
         meta.getAuthToken();
     }
 

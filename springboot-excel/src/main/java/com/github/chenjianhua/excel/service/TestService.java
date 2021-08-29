@@ -1,16 +1,16 @@
-package com.github.chenjianhua.common.excel.example;
+package com.github.chenjianhua.excel.service;
 
 
 import com.github.chenjianhua.common.excel.entity.TableFieldInfoBo;
 import com.github.chenjianhua.common.json.util.JsonUtil;
+import com.github.chenjianhua.excel.model.TestModel;
+import com.github.chenjianhua.excel.model.param.TestExportParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author chenjianhua
@@ -19,11 +19,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Service
 public class TestService {
-    private AtomicInteger testData = new AtomicInteger(1);
+    private Integer testData = 1;
 
     public Long countData(TestExportParam param) {
         log.info("统计数据总数 param:{}", JsonUtil.toJsonString(param));
-        return 1000L;
+        return 10 * 10000L;
     }
 
     public List<TableFieldInfoBo> findTableFieldInfoBo() {
@@ -42,14 +42,14 @@ public class TestService {
 
     public List<TestModel> findTestData(TestExportParam param) {
         log.info("查询数据 param:{}", JsonUtil.toJsonString(param));
-        List<TestModel> testModels = new ArrayList<>(154);
-        for (int i = 1; i <= 200; i++) {
+        List<TestModel> testModels = new ArrayList<>(1000);
+        for (int i = 1; i <= 1000; i++) {
             TestModel testModel = new TestModel();
-            testModel.setBookName("数学之美" + testData.get());
-            testModel.setBookPrice(BigDecimal.valueOf(testData.get()));
+            testModel.setBookName("数学之美" + testData);
+            testModel.setBookPrice(testData.toString());
             testModels.add(testModel);
         }
-        testData.incrementAndGet();
+        testData++;
         return testModels;
     }
 }

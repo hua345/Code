@@ -1,7 +1,7 @@
 package com.github.chenjianhua.common.excel.example;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.github.chenjianhua.common.excel.bo.TableFieldInfoBo;
+import com.github.chenjianhua.common.excel.entity.TableFieldInfoBo;
 import lombok.Data;
 
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package com.github.chenjianhua.common.excel.vo;
+package com.github.chenjianhua.common.excel.entity.importexcel;
 
 import com.github.chenjianhua.common.excel.enums.ExcelExportStatusEnum;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class ImportCallback {
+public class ImportResultVo {
     /**
      * 任务号
      */

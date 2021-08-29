@@ -1,6 +1,6 @@
 package com.github.chenjianhua.common.excel.support;
 
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportTaskParam;
 import com.github.chenjianhua.common.excel.enums.ExcelExportStatusEnum;
 import com.github.chenjianhua.common.excel.service.ExcelServerRequestService;
 import com.github.chenjianhua.common.excel.support.ipt.ExcelImportStrategy;
@@ -8,7 +8,7 @@ import com.github.chenjianhua.common.excel.util.ApplicationContextUtil;
 import com.github.chenjianhua.common.excel.util.ExcelUploadUtil;
 import com.github.chenjianhua.common.excel.util.ThreadPoolUtil;
 import com.github.chenjianhua.common.excel.util.UuidUtil;
-import com.github.chenjianhua.common.excel.vo.ImportCallback;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportResultVo;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.common.config.exception.BusinessException;
 import com.github.common.resp.ResponseVO;
@@ -28,14 +28,14 @@ import java.util.concurrent.*;
 @Slf4j
 @Component
 public class ImportTaskManager implements ApplicationRunner {
-    private static final CompletionService<ResponseVO<ImportCallback>> importExcelCompletionService = new ExecutorCompletionService<>(ThreadPoolUtil.getInstance());
+    private static final CompletionService<ResponseVO<ImportResultVo>> importExcelCompletionService = new ExecutorCompletionService<>(ThreadPoolUtil.getInstance());
 
     /**
      * 同时支持10个导出
      */
     private static Semaphore semaphore = new Semaphore(10);
 
-    private static ImportCallback checkExcelImportParam(ImportTaskParam importTaskParam) {
+    private static ImportResultVo checkExcelImportParam(ImportTaskParam importTaskParam) {
         if (!StringUtils.hasText(importTaskParam.getImportCode())) {
             throw new BusinessException("导入类型为空!");
         }
@@ -55,7 +55,7 @@ public class ImportTaskManager implements ApplicationRunner {
         return null;
     }
 
-    public static ResponseVO<ImportCallback> excelImport(ImportTaskParam importTaskParam) {
+    public static ResponseVO<ImportResultVo> excelImport(ImportTaskParam importTaskParam) {
         importTaskParam.setTaskNumber(UuidUtil.getUuid32());
         ExcelServerRequestService excelServerRequestService = ApplicationContextUtil.getBean(ExcelServerRequestService.class);
         try {
@@ -64,26 +64,26 @@ public class ImportTaskManager implements ApplicationRunner {
             log.info(e.getMessage());
             return ResponseVO.fail(e.getMessage());
         }
-        ImportCallback importCallback = new ImportCallback();
+        ImportResultVo importResultVo = new ImportResultVo();
         try {
             // 上传的导入文件保存到本地temp文件和上传到oss
             ExcelUploadUtil.handleUploadFile(importTaskParam);
-            importCallback = new ImportCallback();
-            importCallback.setTaskNumber(importTaskParam.getTaskNumber());
+            importResultVo = new ImportResultVo();
+            importResultVo.setTaskNumber(importTaskParam.getTaskNumber());
             semaphore.acquire();
             // 如果是异步导出任务或者当前正在执行的导出任务达到最大值
             if (!importTaskParam.isSyncTask()) {
                 // 异步执行，不返回文件路径
                 importExcelCompletionService.submit(() -> ExcelProcessor.importExcel(importTaskParam));
-                return ResponseVO.ok(importCallback);
+                return ResponseVO.ok(importResultVo);
             } else {
                 return ExcelProcessor.importExcel(importTaskParam);
             }
         } catch (Exception e) {
             log.error("[{}]导出失败", importTaskParam.getTaskNumber(), e);
             excelServerRequestService.updateImportErrorResult(importTaskParam, "上传文件异常");
-            importCallback.setImportStatus(ExcelExportStatusEnum.FAIL);
-            return ResponseVO.fail("导入失败!", importCallback);
+            importResultVo.setImportStatus(ExcelExportStatusEnum.FAIL);
+            return ResponseVO.fail("导入失败!", importResultVo);
         } finally {
             // 只释放同步任务信号量，异步任务在异步完成时释放
             if (importTaskParam.isSyncTask()) {
@@ -95,9 +95,9 @@ public class ImportTaskManager implements ApplicationRunner {
     private void handleAsyncTask() {
         while (true) {
             try {
-                Future<ResponseVO<ImportCallback>> future = importExcelCompletionService.take();
+                Future<ResponseVO<ImportResultVo>> future = importExcelCompletionService.take();
                 try {
-                    ResponseVO<ImportCallback> importResp = future.get();
+                    ResponseVO<ImportResultVo> importResp = future.get();
                 } catch (ExecutionException e) {
                     log.error("导入发生异常", e);
                 }

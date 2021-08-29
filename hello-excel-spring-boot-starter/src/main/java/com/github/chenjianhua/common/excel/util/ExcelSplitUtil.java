@@ -1,7 +1,7 @@
 package com.github.chenjianhua.common.excel.util;
 
-import com.github.chenjianhua.common.excel.bo.BeginAndEndTimeBo;
-import com.github.chenjianhua.common.excel.bo.PageSplitBo;
+import com.github.chenjianhua.common.excel.entity.BeginAndEndTimeBo;
+import com.github.chenjianhua.common.excel.entity.PageSplitBo;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 

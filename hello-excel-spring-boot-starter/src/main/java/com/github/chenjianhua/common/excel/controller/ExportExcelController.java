@@ -1,9 +1,9 @@
 package com.github.chenjianhua.common.excel.controller;
 
-import com.github.chenjianhua.common.excel.bo.ept.ExportTaskMeta;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportTaskParam;
 import com.github.chenjianhua.common.excel.support.ExportTaskManager;
-import com.github.chenjianhua.common.excel.vo.ExportCallback;
-import com.github.chenjianhua.common.excel.vo.ExportExcelParam;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportResultVo;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportExcelParam;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.common.resp.ResponseVO;
 import lombok.extern.slf4j.Slf4j;
@@ -23,39 +23,39 @@ import javax.validation.Valid;
 public class ExportExcelController {
     @ResponseBody
     @PostMapping("/async")
-    public ResponseVO asyncExport(@RequestHeader(value = "auth_token", required = true) String authToken,
-                                  @Valid @RequestBody ExportExcelParam param) {
+    public ResponseVO<ExportResultVo> asyncExport(@RequestHeader(value = "auth_token", required = true) String authToken,
+                                                  @Valid @RequestBody ExportExcelParam param) {
         log.info("asyncExport收到导出请求:{}", JsonUtil.toJsonString(param));
         if (null == param || !StringUtils.hasText(param.getExportCode())) {
             return ResponseVO.fail("导出参数格式为{'exportCode':'导出类型','exportArg':'导出参数'}");
         }
-        ExportTaskMeta exportTaskMeta = buildExportTaskMeta(param, authToken);
-        exportTaskMeta.setSyncTask(false);
-        ResponseVO<ExportCallback> exportResp = ExportTaskManager.excelExport(exportTaskMeta);
+        ExportTaskParam exportTaskParam = buildExportTaskMeta(param, authToken);
+        exportTaskParam.setSyncTask(false);
+        ResponseVO<ExportResultVo> exportResp = ExportTaskManager.excelExport(exportTaskParam);
         log.info("asyncExport导出结果:{}", JsonUtil.toJsonString(exportResp));
         return ResponseVO.ok();
     }
 
     @ResponseBody
     @PostMapping("/sync")
-    public ResponseVO<ExportCallback> syncExport(@RequestHeader(value = "auth_token", required = true) String authToken,
+    public ResponseVO<ExportResultVo> syncExport(@RequestHeader(value = "auth_token", required = true) String authToken,
                                                  @Valid @RequestBody ExportExcelParam param) {
         log.info("syncExport收到导出请求:{}", JsonUtil.toJsonString(param));
         if (null == param || !StringUtils.hasText(param.getExportCode())) {
             return ResponseVO.fail("导出参数格式为{'exportCode':'导出类型','exportArg':'导出参数'}");
         }
-        ExportTaskMeta exportTaskMeta = buildExportTaskMeta(param, authToken);
-        exportTaskMeta.setSyncTask(true);
-        ResponseVO<ExportCallback> exportResp = ExportTaskManager.excelExport(exportTaskMeta);
+        ExportTaskParam exportTaskParam = buildExportTaskMeta(param, authToken);
+        exportTaskParam.setSyncTask(true);
+        ResponseVO<ExportResultVo> exportResp = ExportTaskManager.excelExport(exportTaskParam);
         log.info("syncExport导出结果:{}", JsonUtil.toJsonString(exportResp));
         return exportResp;
     }
 
-    private ExportTaskMeta buildExportTaskMeta(ExportExcelParam param, String authToken) {
-        ExportTaskMeta exportTaskMeta = new ExportTaskMeta();
-        exportTaskMeta.setExportCode(param.getExportCode());
-        exportTaskMeta.setExportArg(param.getExportArg());
-        exportTaskMeta.setAuthToken(authToken);
-        return exportTaskMeta;
+    private ExportTaskParam buildExportTaskMeta(ExportExcelParam param, String authToken) {
+        ExportTaskParam exportTaskParam = new ExportTaskParam();
+        exportTaskParam.setExportCode(param.getExportCode());
+        exportTaskParam.setExportArg(param.getExportArg());
+        exportTaskParam.setAuthToken(authToken);
+        return exportTaskParam;
     }
 }

@@ -1,7 +1,7 @@
 package com.github.chenjianhua.common.excel.example;
 
-import com.github.chenjianhua.common.excel.bo.BeginAndEndTimeBo;
-import com.github.chenjianhua.common.excel.bo.ept.ExportTaskMeta;
+import com.github.chenjianhua.common.excel.entity.BeginAndEndTimeBo;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportTaskParam;
 import com.github.chenjianhua.common.excel.support.ept.AbstractComplexExcelExport;
 import com.github.chenjianhua.common.excel.util.ExcelSplitUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ public class TestCurrentStrategy extends AbstractComplexExcelExport<TestCurrentM
      * 初始化数据,比如异步情况下通过token获取用户信息
      */
     @Override
-    public void initExportData(ExportTaskMeta meta) {
+    public void initExportData(ExportTaskParam meta) {
         meta.getAuthToken();
     }
 

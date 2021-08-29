@@ -1,4 +1,4 @@
-package com.github.chenjianhua.common.excel.bo.ept;
+package com.github.chenjianhua.common.excel.entity.exportexcel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @ToString
-public class ExportedMeta {
+public class ExportTaskVo {
     /**
      * 导出任务编号
      */
@@ -48,5 +48,5 @@ public class ExportedMeta {
     /**
      * 已导出总记录数
      */
-    private ExportFileMeta exportFileMeta;
+    private ExportFileBo exportFileBo;
 }

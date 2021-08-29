@@ -1,7 +1,7 @@
 package com.github.chenjianhua.common.excel.support.ipt;
 
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportResultVo;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportTaskParam;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportTaskVo;
 
 import java.io.IOException;
 
@@ -18,6 +18,6 @@ public interface ExcelImportStrategy {
      * @return 导入结果
      * @throws IOException io异常
      */
-    ImportResultVo doImport(ImportTaskParam meta);
+    ImportTaskVo doImport(ImportTaskParam meta);
 
 }

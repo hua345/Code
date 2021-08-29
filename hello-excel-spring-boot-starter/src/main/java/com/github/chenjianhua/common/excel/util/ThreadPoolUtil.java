@@ -36,7 +36,7 @@ public class ThreadPoolUtil {
 
         @Override
         public Thread newThread(Runnable r) {
-            Thread t = new Thread(r, poolName + "export-thread-" + count.getAndIncrement());
+            Thread t = new Thread(r, poolName + "excel-thread-" + count.getAndIncrement());
             //设置为非守护线程
             if (t.isDaemon()) {
                 t.setDaemon(false);

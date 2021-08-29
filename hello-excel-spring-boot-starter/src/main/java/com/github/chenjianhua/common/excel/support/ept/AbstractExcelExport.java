@@ -3,8 +3,8 @@ package com.github.chenjianhua.common.excel.support.ept;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
-import com.github.chenjianhua.common.excel.bo.ept.ExportDataMeta;
-import com.github.chenjianhua.common.excel.bo.ept.ExportFileMeta;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportDataBo;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportFileBo;
 import com.github.chenjianhua.common.excel.support.template.ExportTemplate;
 import com.github.chenjianhua.common.excel.util.ExcelSheetUtil;
 import com.github.chenjianhua.common.excel.util.ExportReflectUtil;
@@ -38,7 +38,7 @@ public abstract class AbstractExcelExport<T, P> extends ExportTemplate<T, P> {
     /**
      * 写入数据
      */
-    private void writeSheetData(ExcelWriter excelWriter, ExportDataMeta exportMeta, List<T> exportModelData, WriteSheet writeSheet) {
+    private void writeSheetData(ExcelWriter excelWriter, ExportDataBo exportMeta, List<T> exportModelData, WriteSheet writeSheet) {
         // 写入数据
         if (CollectionUtils.isEmpty(exportMeta.getExportFields())) {
             excelWriter.write(exportModelData, writeSheet);
@@ -54,8 +54,8 @@ public abstract class AbstractExcelExport<T, P> extends ExportTemplate<T, P> {
     }
 
     @Override
-    public ExportFileMeta excelExport(ExportDataMeta exportMeta) throws IOException {
-        ExportFileMeta exportFileMeta = new ExportFileMeta();
+    public ExportFileBo excelExport(ExportDataBo exportMeta) throws IOException {
+        ExportFileBo exportFileBo = new ExportFileBo();
         ExcelWriter excelWriter;
         // 生成临时文件（会自动删除）
         File tempFile = null;
@@ -72,14 +72,14 @@ public abstract class AbstractExcelExport<T, P> extends ExportTemplate<T, P> {
             }
             // 写入数据
             writeSheetData(excelWriter, exportMeta, modelData, writeSheet);
-            exportFileMeta.setTotalRecord((long) modelData.size());
+            exportFileBo.setTotalRecord((long) modelData.size());
             excelWriter.finish();
         } finally {
-            exportFileMeta.setExportTimes(1);
-            exportFileMeta.setExportFile(tempFile);
-            exportFileMeta.setFileSize(tempFile.length());
+            exportFileBo.setExportTimes(1);
+            exportFileBo.setExportFile(tempFile);
+            exportFileBo.setFileSize(tempFile.length());
         }
 
-        return exportFileMeta;
+        return exportFileBo;
     }
 }

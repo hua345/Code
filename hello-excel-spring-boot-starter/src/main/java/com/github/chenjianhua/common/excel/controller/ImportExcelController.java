@@ -1,8 +1,8 @@
 package com.github.chenjianhua.common.excel.controller;
 
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportTaskParam;
 import com.github.chenjianhua.common.excel.support.ImportTaskManager;
-import com.github.chenjianhua.common.excel.vo.ImportCallback;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportResultVo;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.common.config.exception.BusinessException;
 import com.github.common.resp.ResponseVO;
@@ -30,7 +30,7 @@ public class ImportExcelController {
 
     @ResponseBody
     @PostMapping("/async")
-    public ResponseVO<ImportCallback> asyncImport(@RequestHeader(value = "auth_token") String authToken,
+    public ResponseVO<ImportResultVo> asyncImport(@RequestHeader(value = "auth_token") String authToken,
                                                   @RequestParam(UPLOAD_FILE) MultipartFile file,
                                                   HttpServletRequest request) {
 
@@ -39,14 +39,14 @@ public class ImportExcelController {
         log.info("asyncImport收到导入请求:{}", JsonUtil.toJsonString(importTaskParam));
         importTaskParam.setSyncTask(false);
         importTaskParam.setFile(file);
-        ResponseVO<ImportCallback> importResp = ImportTaskManager.excelImport(importTaskParam);
+        ResponseVO<ImportResultVo> importResp = ImportTaskManager.excelImport(importTaskParam);
         log.info("导入结果:{}", JsonUtil.toJsonString(importResp));
         return importResp;
     }
 
     @ResponseBody
     @PostMapping("/sync")
-    public ResponseVO<ImportCallback> syncImport(@RequestHeader(value = "auth_token") String authToken,
+    public ResponseVO<ImportResultVo> syncImport(@RequestHeader(value = "auth_token") String authToken,
                                                  @RequestParam("file") MultipartFile file,
                                                  HttpServletRequest request) {
         checkExcel(file);
@@ -54,7 +54,7 @@ public class ImportExcelController {
         log.info("asyncImport收到导入请求:{}", JsonUtil.toJsonString(importTaskParam));
         importTaskParam.setSyncTask(true);
         importTaskParam.setFile(file);
-        ResponseVO<ImportCallback> importResp = ImportTaskManager.excelImport(importTaskParam);
+        ResponseVO<ImportResultVo> importResp = ImportTaskManager.excelImport(importTaskParam);
         log.info("导入结果:{}", JsonUtil.toJsonString(importResp));
         return importResp;
     }

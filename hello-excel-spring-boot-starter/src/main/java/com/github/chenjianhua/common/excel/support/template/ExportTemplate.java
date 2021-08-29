@@ -1,11 +1,11 @@
 package com.github.chenjianhua.common.excel.support.template;
 
 import com.alibaba.excel.write.handler.WriteHandler;
-import com.github.chenjianhua.common.excel.bo.ept.ExportDataMeta;
-import com.github.chenjianhua.common.excel.bo.ept.ExportFileMeta;
-import com.github.chenjianhua.common.excel.bo.ept.ExportTaskMeta;
-import com.github.chenjianhua.common.excel.bo.ept.ExportedMeta;
-import com.github.chenjianhua.common.excel.bo.TableFieldInfoBo;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportDataBo;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportFileBo;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportTaskParam;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportTaskVo;
+import com.github.chenjianhua.common.excel.entity.TableFieldInfoBo;
 import com.github.chenjianhua.common.excel.support.ept.ExcelExportStrategy;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.common.config.exception.BusinessException;
@@ -62,28 +62,28 @@ public abstract class ExportTemplate<T, P> implements ExcelExportStrategy {
     /**
      * 初始化数据,比如异步情况下通过token获取用户信息
      */
-    public void initExportData(ExportTaskMeta meta) {
+    public void initExportData(ExportTaskParam meta) {
 
     }
 
     /**
      * 导出的具体写入excel代码
      */
-    public abstract ExportFileMeta excelExport(ExportDataMeta exportMeta) throws IOException;
+    public abstract ExportFileBo excelExport(ExportDataBo exportMeta) throws IOException;
 
     /**
      * 构建导出元数据
      */
-    private ExportDataMeta buildExportData(ExportTaskMeta meta, P exportParam) {
-        ExportDataMeta exportDataMeta = new ExportDataMeta();
-        exportDataMeta.setFileName(this.fileName);
-        exportDataMeta.setSheetName(this.sheetName);
-        exportDataMeta.setWriteHandlers(this.writeHandlers);
-        exportDataMeta.setExportParam(exportParam);
-        exportDataMeta.setTaskMeta(meta);
-        exportDataMeta.setModelClass(this.modelClazz);
-        buildDynamicTableField(exportDataMeta, exportParam);
-        return exportDataMeta;
+    private ExportDataBo buildExportData(ExportTaskParam meta, P exportParam) {
+        ExportDataBo exportDataBo = new ExportDataBo();
+        exportDataBo.setFileName(this.fileName);
+        exportDataBo.setSheetName(this.sheetName);
+        exportDataBo.setWriteHandlers(this.writeHandlers);
+        exportDataBo.setExportParam(exportParam);
+        exportDataBo.setTaskMeta(meta);
+        exportDataBo.setModelClass(this.modelClazz);
+        buildDynamicTableField(exportDataBo, exportParam);
+        return exportDataBo;
     }
 
     /**
@@ -123,7 +123,7 @@ public abstract class ExportTemplate<T, P> implements ExcelExportStrategy {
      * @throws IOException io异常
      */
     @Override
-    public final ExportedMeta doExport(ExportTaskMeta meta) throws IOException {
+    public final ExportTaskVo doExport(ExportTaskParam meta) throws IOException {
         // 解析范型
         parseGenericClassType();
         // 初始化数据,比如异步情况下通过token获取用户信息
@@ -131,45 +131,45 @@ public abstract class ExportTemplate<T, P> implements ExcelExportStrategy {
         // 构建参数
         P exportParam = buildExportParam(meta.getExportArg());
         // 初始化一些信息
-        ExportDataMeta exportDataMeta = buildExportData(meta, exportParam);
+        ExportDataBo exportDataBo = buildExportData(meta, exportParam);
         // 执行导出
-        ExportedMeta exportedMeta = doExcelExport(exportDataMeta);
+        ExportTaskVo exportTaskVo = doExcelExport(exportDataBo);
         // 获取导出后的信息
-        completeExport(exportedMeta);
-        return exportedMeta;
+        completeExport(exportTaskVo);
+        return exportTaskVo;
     }
 
-    public ExportedMeta doExcelExport(ExportDataMeta exportMeta) throws IOException {
-        ExportedMeta exportedMeta = new ExportedMeta();
-        ExportTaskMeta taskMeta = exportMeta.getTaskMeta();
-        exportedMeta.setSyncTask(taskMeta.isSyncTask());
-        exportedMeta.setTaskNumber(taskMeta.getTaskNumber());
-        exportedMeta.setExportArg(taskMeta.getExportArg());
-        exportedMeta.setStartTime(LocalDateTime.now());
+    public ExportTaskVo doExcelExport(ExportDataBo exportMeta) throws IOException {
+        ExportTaskVo exportTaskVo = new ExportTaskVo();
+        ExportTaskParam taskMeta = exportMeta.getTaskMeta();
+        exportTaskVo.setSyncTask(taskMeta.isSyncTask());
+        exportTaskVo.setTaskNumber(taskMeta.getTaskNumber());
+        exportTaskVo.setExportArg(taskMeta.getExportArg());
+        exportTaskVo.setStartTime(LocalDateTime.now());
         // 开始导出数据
-        exportedMeta.setExportFileMeta(excelExport(exportMeta));
-        exportedMeta.setFileSize(exportedMeta.getExportFileMeta().getFileSize());
-        exportedMeta.setTotalRecord(exportedMeta.getExportFileMeta().getTotalRecord());
-        exportedMeta.setEndTime(LocalDateTime.now());
-        log.info("导出结果:{}", JsonUtil.toJsonString(exportedMeta));
-        return exportedMeta;
+        exportTaskVo.setExportFileBo(excelExport(exportMeta));
+        exportTaskVo.setFileSize(exportTaskVo.getExportFileBo().getFileSize());
+        exportTaskVo.setTotalRecord(exportTaskVo.getExportFileBo().getTotalRecord());
+        exportTaskVo.setEndTime(LocalDateTime.now());
+        log.info("导出结果:{}", JsonUtil.toJsonString(exportTaskVo));
+        return exportTaskVo;
     }
 
     /**
      * 自动检查动态导出字段
      */
-    private void buildDynamicTableField(ExportDataMeta exportDataMeta, P exportParam) {
+    private void buildDynamicTableField(ExportDataBo exportDataBo, P exportParam) {
         Field dynamicTableField = ReflectionUtils.findField(this.paramClazz, "exportFields");
         if (null != dynamicTableField) {
             ResolvableType resolvableType = ResolvableType.forField(dynamicTableField);
             if (List.class.equals(resolvableType.resolve()) && TableFieldInfoBo.class.equals(resolvableType.getGeneric(0).resolve())) {
                 dynamicTableField.setAccessible(true);
                 try {
-                    exportDataMeta.setExportFields((List<TableFieldInfoBo>) dynamicTableField.get(exportParam));
+                    exportDataBo.setExportFields((List<TableFieldInfoBo>) dynamicTableField.get(exportParam));
                 } catch (IllegalAccessException e) {
-                    log.error("{}获取动态导出字段失败:{}", exportDataMeta.getTaskMeta().getTaskNumber(), e);
+                    log.error("{}获取动态导出字段失败:{}", exportDataBo.getTaskMeta().getTaskNumber(), e);
                 }
-                log.info("{}动态导出字段:{}", exportDataMeta.getTaskMeta().getTaskNumber(), JsonUtil.toJsonString(exportDataMeta.getExportFields()));
+                log.info("{}动态导出字段:{}", exportDataBo.getTaskMeta().getTaskNumber(), JsonUtil.toJsonString(exportDataBo.getExportFields()));
             }
 
         }
@@ -178,9 +178,9 @@ public abstract class ExportTemplate<T, P> implements ExcelExportStrategy {
     /**
      * 导出完成执行,如果需要获取导出文件可以重载这个方法
      *
-     * @param exportedMeta 导出完成结果
+     * @param exportTaskVo 导出完成结果
      */
-    public void completeExport(ExportedMeta exportedMeta) {
+    public void completeExport(ExportTaskVo exportTaskVo) {
 
     }
 }

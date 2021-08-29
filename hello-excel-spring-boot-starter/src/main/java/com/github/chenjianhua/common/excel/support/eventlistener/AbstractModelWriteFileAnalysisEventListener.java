@@ -164,8 +164,9 @@ public abstract class AbstractModelWriteFileAnalysisEventListener<T> extends Abs
         if (null != excelWriter && null != writeSheet) {
             excelWriter.write(Collections.singletonList(rowCellList), writeSheet);
         } else {
-            List<List<String>> headList = rowCellList.stream().map(item -> Arrays.asList(item.toString())).collect(Collectors.toList());
+            List<List<String>> headList = new ArrayList<>();
             buildExcelResultFile(headList, context);
+            excelWriter.write(Collections.singletonList(rowCellList), writeSheet);
         }
     }
 

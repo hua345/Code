@@ -1,4 +1,4 @@
-package com.github.chenjianhua.common.excel.vo;
+package com.github.chenjianhua.common.excel.entity.exportexcel;
 
 import lombok.Data;
 

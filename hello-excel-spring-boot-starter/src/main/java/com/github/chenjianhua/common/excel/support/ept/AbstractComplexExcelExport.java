@@ -3,15 +3,15 @@ package com.github.chenjianhua.common.excel.support.ept;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
-import com.github.chenjianhua.common.excel.bo.ept.ExportDataMeta;
-import com.github.chenjianhua.common.excel.bo.ept.ExportFileMeta;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportDataBo;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportFileBo;
 import com.github.chenjianhua.common.excel.enums.ExcelExportStatusEnum;
 import com.github.chenjianhua.common.excel.service.ExcelServerRequestService;
 import com.github.chenjianhua.common.excel.support.template.ExportTemplate;
 import com.github.chenjianhua.common.excel.util.ApplicationContextUtil;
 import com.github.chenjianhua.common.excel.util.ExcelSheetUtil;
 import com.github.chenjianhua.common.excel.util.ExportReflectUtil;
-import com.github.chenjianhua.common.excel.vo.UpdateExportHisResultParam;
+import com.github.chenjianhua.common.excel.entity.log.UpdateExportHisResultParam;
 import com.github.common.config.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -52,7 +52,7 @@ public abstract class AbstractComplexExcelExport<T, P> extends ExportTemplate<T,
     /**
      * 写入数据
      */
-    private void writeSheetData(ExcelWriter excelWriter, ExportDataMeta exportMeta, List<T> exportModelData, WriteSheet writeSheet) {
+    private void writeSheetData(ExcelWriter excelWriter, ExportDataBo exportMeta, List<T> exportModelData, WriteSheet writeSheet) {
         // 写入数据
         if (CollectionUtils.isEmpty(exportMeta.getExportFields())) {
             excelWriter.write(exportModelData, writeSheet);
@@ -68,12 +68,12 @@ public abstract class AbstractComplexExcelExport<T, P> extends ExportTemplate<T,
     }
 
     @Override
-    public ExportFileMeta excelExport(ExportDataMeta exportMeta) throws IOException {
+    public ExportFileBo excelExport(ExportDataBo exportMeta) throws IOException {
         List<P> params = buildComplexExportParam((P) exportMeta.getExportParam());
         if (CollectionUtils.isEmpty(params)) {
             throw new BusinessException("大数据量导出参数为空");
         }
-        ExportFileMeta exportFileMeta = new ExportFileMeta();
+        ExportFileBo exportFileBo = new ExportFileBo();
         ExcelWriter excelWriter;
         // 生成临时文件（会自动删除）
         File tempFile = null;
@@ -98,20 +98,20 @@ public abstract class AbstractComplexExcelExport<T, P> extends ExportTemplate<T,
                 // 写入数据
                 writeSheetData(excelWriter, exportMeta, rows, currentSheet);
             }
-            exportFileMeta.setExportTimes(params.size());
+            exportFileBo.setExportTimes(params.size());
             excelWriter.finish();
         } finally {
-            exportFileMeta.setExportFile(tempFile);
-            exportFileMeta.setFileSize(tempFile.length());
-            exportFileMeta.setTotalRecord(currentDataSize);
+            exportFileBo.setExportFile(tempFile);
+            exportFileBo.setFileSize(tempFile.length());
+            exportFileBo.setTotalRecord(currentDataSize);
         }
-        return exportFileMeta;
+        return exportFileBo;
     }
 
     /**
      * 处理导出进度
      */
-    private void processHandle(List<P> params, Integer index, ExportDataMeta exportMeta) {
+    private void processHandle(List<P> params, Integer index, ExportDataBo exportMeta) {
         ExcelServerRequestService excelServerRequestService = ApplicationContextUtil.getBean(ExcelServerRequestService.class);
         UpdateExportHisResultParam updateExportHisResultParam = new UpdateExportHisResultParam();
         updateExportHisResultParam.setTaskNumber(exportMeta.getTaskMeta().getTaskNumber());

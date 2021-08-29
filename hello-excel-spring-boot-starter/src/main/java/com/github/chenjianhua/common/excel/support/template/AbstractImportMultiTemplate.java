@@ -1,7 +1,7 @@
 package com.github.chenjianhua.common.excel.support.template;
 
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportResultVo;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportTaskParam;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportTaskVo;
 import com.github.chenjianhua.common.excel.support.ExcelStrategySelector;
 import com.github.chenjianhua.common.excel.support.ipt.ExcelImportStrategy;
 import com.github.common.config.exception.BusinessException;
@@ -41,15 +41,15 @@ public abstract class AbstractImportMultiTemplate implements ExcelImportStrategy
      * 执行导入
      */
     @Override
-    public final ImportResultVo doImport(ImportTaskParam importTaskParam) {
+    public final ImportTaskVo doImport(ImportTaskParam importTaskParam) {
         checkImportStrategyList();
-        ImportResultVo importResultVo = new ImportResultVo();
-        importResultVo.setSyncTask(importTaskParam.isSyncTask());
-        importResultVo.setTaskNumber(importTaskParam.getTaskNumber());
-        importResultVo.setImportArg(importTaskParam.getImportArg());
-        List<ImportResultVo> resultList = new ArrayList<>(8);
+        ImportTaskVo importTaskVo = new ImportTaskVo();
+        importTaskVo.setSyncTask(importTaskParam.isSyncTask());
+        importTaskVo.setTaskNumber(importTaskParam.getTaskNumber());
+        importTaskVo.setImportArg(importTaskParam.getImportArg());
+        List<ImportTaskVo> resultList = new ArrayList<>(8);
         boolean allSuccess = true;
-        ImportResultVo importResult = null;
+        ImportTaskVo importResult = null;
         // 执行导入数据
         for (String item : importStrategyList) {
             ExcelImportStrategy strategy = ExcelStrategySelector.getImportStrategy(item);
@@ -65,12 +65,12 @@ public abstract class AbstractImportMultiTemplate implements ExcelImportStrategy
         }
         // 计算各个Sheet总数
         resultList.forEach(item -> {
-            importResultVo.setTotalRecord(importResultVo.getTotalRecord() + item.getTotalRecord());
-            importResultVo.setFailedRecord(importResultVo.getFailedRecord() + item.getFailedRecord());
-            importResultVo.setSuccessRecord(importResultVo.getSuccessRecord() + item.getSuccessRecord());
+            importTaskVo.setTotalRecord(importTaskVo.getTotalRecord() + item.getTotalRecord());
+            importTaskVo.setFailedRecord(importTaskVo.getFailedRecord() + item.getFailedRecord());
+            importTaskVo.setSuccessRecord(importTaskVo.getSuccessRecord() + item.getSuccessRecord());
         });
         // 设置最后一个Sheet结果文件
-        importResultVo.setResultTempFile(importResult.getResultTempFile());
+        importTaskVo.setResultTempFile(importResult.getResultTempFile());
         // 移除最后一个Sheet结果
         resultList.remove(resultList.size() - 1);
         // 删除之前Sheet结果文件
@@ -81,6 +81,6 @@ public abstract class AbstractImportMultiTemplate implements ExcelImportStrategy
                 }
             });
         }
-        return importResultVo;
+        return importTaskVo;
     }
 }

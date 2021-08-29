@@ -1,6 +1,6 @@
 package com.github.chenjianhua.common.excel.file.impl;
 
-import com.github.chenjianhua.common.excel.bo.FileUploadResponse;
+import com.github.chenjianhua.common.excel.entity.FileUploadResponse;
 import com.github.chenjianhua.common.excel.config.ExcelAutoProperties;
 import com.github.chenjianhua.common.excel.file.FileUploadService;
 import com.github.common.config.exception.BusinessException;

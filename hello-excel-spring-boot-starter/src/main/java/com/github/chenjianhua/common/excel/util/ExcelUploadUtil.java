@@ -1,10 +1,10 @@
 package com.github.chenjianhua.common.excel.util;
 
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.github.chenjianhua.common.excel.bo.ept.ExportedMeta;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportTaskVo;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportTaskParam;
 import com.github.chenjianhua.common.excel.enums.ExcelConstants;
-import com.github.chenjianhua.common.excel.bo.FileUploadResponse;
+import com.github.chenjianhua.common.excel.entity.FileUploadResponse;
 import com.github.chenjianhua.common.excel.file.FileUploadService;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import com.github.common.config.exception.BusinessException;
@@ -59,8 +59,8 @@ public class ExcelUploadUtil {
         return originTempFile;
     }
 
-    public static FileUploadResponse uploadExport(ExportedMeta exportedMeta) {
-        File exportFile = exportedMeta.getExportFileMeta().getExportFile();
+    public static FileUploadResponse uploadExport(ExportTaskVo exportTaskVo) {
+        File exportFile = exportTaskVo.getExportFileBo().getExportFile();
         FileUploadService fileUploadService = ApplicationContextUtil.getBean(FileUploadService.class);
         StringBuilder sb = new StringBuilder();
         sb.append("excel-export").append(File.separator)

@@ -1,7 +1,7 @@
 package com.github.chenjianhua.common.excel.example;
 
 
-import com.github.chenjianhua.common.excel.bo.TableFieldInfoBo;
+import com.github.chenjianhua.common.excel.entity.TableFieldInfoBo;
 import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

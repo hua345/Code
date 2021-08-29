@@ -1,4 +1,4 @@
-package com.github.chenjianhua.common.excel.bo.ept;
+package com.github.chenjianhua.common.excel.entity.exportexcel;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import java.io.File;
 @Setter
 @Getter
 @ToString
-public class ExportFileMeta {
+public class ExportFileBo {
     /**
      * 导出文件
      */

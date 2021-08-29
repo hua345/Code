@@ -1,7 +1,7 @@
-package com.github.chenjianhua.common.excel.bo.ept;
+package com.github.chenjianhua.common.excel.entity.exportexcel;
 
 import com.alibaba.excel.write.handler.WriteHandler;
-import com.github.chenjianhua.common.excel.bo.TableFieldInfoBo;
+import com.github.chenjianhua.common.excel.entity.TableFieldInfoBo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-public class ExportDataMeta {
+public class ExportDataBo {
     /**
      * 导出数据Class对象
      */
@@ -44,6 +44,6 @@ public class ExportDataMeta {
     /**
      * 导出任务数据
      */
-    private ExportTaskMeta taskMeta;
+    private ExportTaskParam taskMeta;
 
 }

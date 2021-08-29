@@ -1,6 +1,6 @@
 package com.github.chenjianhua.common.excel.file;
 
-import com.github.chenjianhua.common.excel.bo.FileUploadResponse;
+import com.github.chenjianhua.common.excel.entity.FileUploadResponse;
 
 import java.io.File;
 import java.io.InputStream;

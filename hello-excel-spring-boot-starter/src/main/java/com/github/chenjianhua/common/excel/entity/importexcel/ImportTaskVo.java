@@ -1,13 +1,10 @@
-package com.github.chenjianhua.common.excel.bo.ipt;
+package com.github.chenjianhua.common.excel.entity.importexcel;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.File;
-import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author chenjianhua
@@ -16,7 +13,7 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-public class ImportResultVo {
+public class ImportTaskVo {
     /**
      * 导出任务编号
      */

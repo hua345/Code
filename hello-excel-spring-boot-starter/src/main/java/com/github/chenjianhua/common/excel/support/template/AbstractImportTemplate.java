@@ -3,9 +3,9 @@ package com.github.chenjianhua.common.excel.support.template;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportDataBo;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportTaskParam;
-import com.github.chenjianhua.common.excel.bo.ipt.ImportResultVo;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportDataBo;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportTaskParam;
+import com.github.chenjianhua.common.excel.entity.importexcel.ImportTaskVo;
 import com.github.chenjianhua.common.excel.support.eventlistener.AbstractModelAnalysisEventListener;
 import com.github.chenjianhua.common.excel.support.ipt.ExcelImportStrategy;
 import com.github.common.config.exception.BusinessException;
@@ -83,28 +83,28 @@ public abstract class AbstractImportTemplate<T> implements ExcelImportStrategy {
     /**
      * 实现具体的导入业务
      */
-    protected final ImportResultVo excelImport(ImportDataBo importDataBo) {
-        ImportResultVo importResultVo = new ImportResultVo();
+    protected final ImportTaskVo excelImport(ImportDataBo importDataBo) {
+        ImportTaskVo importTaskVo = new ImportTaskVo();
         ImportTaskParam taskMeta = importDataBo.getImportTaskParam();
-        importResultVo.setSyncTask(taskMeta.isSyncTask());
-        importResultVo.setTaskNumber(taskMeta.getTaskNumber());
-        importResultVo.setImportArg(taskMeta.getImportArg());
+        importTaskVo.setSyncTask(taskMeta.isSyncTask());
+        importTaskVo.setTaskNumber(taskMeta.getTaskNumber());
+        importTaskVo.setImportArg(taskMeta.getImportArg());
         // 初始化事件监听器
         AbstractModelAnalysisEventListener<T> excelListener = defaultAnalysisListener(importDataBo);
         // 进行导入处理
         defaultImportRead(importDataBo, excelListener);
-        importResultVo.setSuccessRecord(excelListener.getSuccessRecord());
-        importResultVo.setFailedRecord(excelListener.getFailedRecord());
-        importResultVo.setTotalRecord(excelListener.getSuccessRecord() + excelListener.getFailedRecord());
-        importResultVo.setResultTempFile(excelListener.getResultTempFile());
-        return importResultVo;
+        importTaskVo.setSuccessRecord(excelListener.getSuccessRecord());
+        importTaskVo.setFailedRecord(excelListener.getFailedRecord());
+        importTaskVo.setTotalRecord(excelListener.getSuccessRecord() + excelListener.getFailedRecord());
+        importTaskVo.setResultTempFile(excelListener.getResultTempFile());
+        return importTaskVo;
     }
 
     /**
      * 执行导入
      */
     @Override
-    public final ImportResultVo doImport(ImportTaskParam importTaskParam) {
+    public final ImportTaskVo doImport(ImportTaskParam importTaskParam) {
         // 解析范型
         parseGenericClassType();
         // 构建导入元数据
@@ -112,9 +112,9 @@ public abstract class AbstractImportTemplate<T> implements ExcelImportStrategy {
         importDataBo.setImportTaskParam(importTaskParam);
         importDataBo.setModelClass(this.modelClazz);
         // 执行导入数据
-        ImportResultVo importResultVo = excelImport(importDataBo);
+        ImportTaskVo importTaskVo = excelImport(importDataBo);
 
-        return importResultVo;
+        return importTaskVo;
     }
 
 }

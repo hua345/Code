@@ -4,13 +4,10 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.ObjectMetadata;
-import com.github.chenjianhua.common.excel.bo.FileUploadResponse;
+import com.github.chenjianhua.common.excel.entity.FileUploadResponse;
 import com.github.chenjianhua.common.excel.config.OosConfig;
 import com.github.chenjianhua.common.excel.file.FileUploadService;
-import com.github.chenjianhua.common.excel.util.UuidUtil;
-import com.github.chenjianhua.common.json.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 

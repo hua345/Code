@@ -5,7 +5,7 @@ import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.builder.ExcelWriterBuilder;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
-import com.github.chenjianhua.common.excel.bo.ept.ExportDataMeta;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportDataBo;
 import com.github.chenjianhua.common.excel.support.writehandler.DefaultStylesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -52,7 +52,7 @@ public class ExcelSheetUtil {
     /**
      * 初始化sheet
      */
-    public static WriteSheet createExportWriteSheet(Integer sheetNum, ExportDataMeta exportMeta) {
+    public static WriteSheet createExportWriteSheet(Integer sheetNum, ExportDataBo exportMeta) {
         WriteSheet writeSheet;
         if (CollectionUtils.isEmpty(exportMeta.getExportFields())) {
             writeSheet = createExcelSheet(exportMeta.getSheetName() + sheetNum, sheetNum, exportMeta.getModelClass());
@@ -71,7 +71,7 @@ public class ExcelSheetUtil {
     /**
      * 初始化sheet
      */
-    public static WriteSheet initExportWriteSheet(ExportDataMeta exportMeta) {
+    public static WriteSheet initExportWriteSheet(ExportDataBo exportMeta) {
         return createExportWriteSheet(1, exportMeta);
     }
 
@@ -87,7 +87,7 @@ public class ExcelSheetUtil {
     /**
      * 检查是否切换Sheet
      */
-    public static WriteSheet checkExportWriteSheet(Long currentDataSize, WriteSheet currentSheet, ExportDataMeta exportMeta) {
+    public static WriteSheet checkExportWriteSheet(Long currentDataSize, WriteSheet currentSheet, ExportDataBo exportMeta) {
         Integer sheetNum = ExcelSheetUtil.currentSheetNum(currentDataSize);
         if (!sheetNum.equals(currentSheet.getSheetNo())) {
             currentSheet = createExportWriteSheet(sheetNum, exportMeta);
@@ -99,7 +99,7 @@ public class ExcelSheetUtil {
     /**
      * 创建excel写入流
      */
-    public static ExcelWriter createExcelWriter(ExportDataMeta exportMeta, File tempFile) throws FileNotFoundException {
+    public static ExcelWriter createExcelWriter(ExportDataBo exportMeta, File tempFile) throws FileNotFoundException {
         ExcelWriter excelWriter = null;
         FileOutputStream out = new FileOutputStream(tempFile);
 

@@ -1,10 +1,8 @@
-package com.github.chenjianhua.common.excel.bo.ept;
+package com.github.chenjianhua.common.excel.entity.exportexcel;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import javax.validation.constraints.NotEmpty;
 
 /**
  * @author chenjianhua
@@ -13,7 +11,7 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 @Getter
 @ToString
-public class ExportTaskMeta {
+public class ExportTaskParam {
     /**
      * 导出型号（导出编号）
      */

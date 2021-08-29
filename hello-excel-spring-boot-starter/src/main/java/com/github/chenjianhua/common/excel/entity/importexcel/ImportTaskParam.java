@@ -1,4 +1,4 @@
-package com.github.chenjianhua.common.excel.bo.ipt;
+package com.github.chenjianhua.common.excel.entity.importexcel;
 
 import lombok.Getter;
 import lombok.Setter;

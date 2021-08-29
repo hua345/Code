@@ -1,7 +1,7 @@
 package com.github.chenjianhua.common.excel.support.ept;
 
-import com.github.chenjianhua.common.excel.bo.ept.ExportTaskMeta;
-import com.github.chenjianhua.common.excel.bo.ept.ExportedMeta;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportTaskParam;
+import com.github.chenjianhua.common.excel.entity.exportexcel.ExportTaskVo;
 
 import java.io.IOException;
 
@@ -18,5 +18,5 @@ public interface ExcelExportStrategy {
      * @return 导出结果
      * @throws IOException io异常
      */
-    ExportedMeta doExport(ExportTaskMeta meta) throws IOException;
+    ExportTaskVo doExport(ExportTaskParam meta) throws IOException;
 }
